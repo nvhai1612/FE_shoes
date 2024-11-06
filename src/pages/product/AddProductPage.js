@@ -81,7 +81,7 @@ function AddProductPage({ onBack }) {
               </InputGroup>
             </Form.Group>
 
-            <div style={{ marginTop: '30px' }}>
+            <div style={{ marginTop: '40px' }}>
               <Button variant="primary">Thêm</Button>
             </div>
           </Col>

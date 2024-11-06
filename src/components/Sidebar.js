@@ -87,8 +87,8 @@ function Sidebar({ isOpen, onNavigate }) {
           {openSubMenu === "/product" && isOpen && (
             <Nav className="flex-column ms-4">
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/quanlybienthesanpham" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/quanlybienthesanpham")}
+                className={`text-dark ${activeKey === "/product/danhsachsanpham" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/product/danhsachsanpham")}
               >
                 Sản phẩm
               </Nav.Link>

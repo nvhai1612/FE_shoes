@@ -75,50 +75,50 @@ function Sidebar({ isOpen, onNavigate }) {
         {/* Quản Lý Sản Phẩm với submenu */}
         <Nav.Item className="mb-3">
           <Nav.Link
-            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/product" ? "fw-bold" : ""}`}
-            onClick={() => toggleSubMenu("/product")}
+            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/sanpham" ? "fw-bold" : ""}`}
+            onClick={() => toggleSubMenu("/sanpham")}
           >
             <div className="d-flex align-items-center">
               <FaProductHunt className="me-2" />
               {isOpen && "Quản Lý Sản Phẩm"}
             </div>
-            {isOpen && (openSubMenu === "/product" ? <FaChevronDown /> : <FaChevronRight />)}
+            {isOpen && (openSubMenu === "/sanpham" ? <FaChevronDown /> : <FaChevronRight />)}
           </Nav.Link>
-          {openSubMenu === "/product" && isOpen && (
+          {openSubMenu === "/sanpham" && isOpen && (
             <Nav className="flex-column ms-4">
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/danhsachsanpham" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/danhsachsanpham")}
+                className={`text-dark ${activeKey === "/sanpham/danhsachsanpham" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/danhsachsanpham")}
               >
                 Sản phẩm
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/degiay" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/degiay")}
+                className={`text-dark ${activeKey === "/sanpham/degiay" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/degiay")}
               >
                 Đế giày
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/thuonghieu" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/thuonghieu")}
+                className={`text-dark ${activeKey === "/sanpham/thuonghieu" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/thuonghieu")}
               >
                 Thương hiệu
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/chatlieu" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/chatlieu")}
+                className={`text-dark ${activeKey === "/sanpham/chatlieu" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/chatlieu")}
               >
                 Chất liệu
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/mausac" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/mausac")}
+                className={`text-dark ${activeKey === "/sanpham/mausac" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/mausac")}
               >
                 Màu sắc
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/product/kichco" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/product/kichco")}
+                className={`text-dark ${activeKey === "/sanpham/kichco" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/sanpham/kichco")}
               >
                 Kích cỡ
               </Nav.Link>
@@ -129,26 +129,26 @@ function Sidebar({ isOpen, onNavigate }) {
         {/* Quản Lý Tài Khoản với submenu */}
         <Nav.Item className="mb-3">
           <Nav.Link
-            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/account" ? "fw-bold" : ""}`}
-            onClick={() => toggleSubMenu("/account")}
+            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/taikhoan" ? "fw-bold" : ""}`}
+            onClick={() => toggleSubMenu("/taikhoan")}
           >
             <div className="d-flex align-items-center">
               <FaUser className="me-2" />
               {isOpen && "Quản Lý Tài Khoản"}
             </div>
-            {isOpen && (openSubMenu === "/account" ? <FaChevronDown /> : <FaChevronRight />)}
+            {isOpen && (openSubMenu === "/taikhoan" ? <FaChevronDown /> : <FaChevronRight />)}
           </Nav.Link>
-          {openSubMenu === "/account" && isOpen && (
+          {openSubMenu === "/taikhoan" && isOpen && (
             <Nav className="flex-column ms-4">
               <Nav.Link
-                className={`text-dark ${activeKey === "/account/khachhang" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/account/khachhang")}
+                className={`text-dark ${activeKey === "/taikhoan/khachhang" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/taikhoan/khachhang")}
               >
                 Khách hàng
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/account/nhanvien" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/account/nhanvien")}
+                className={`text-dark ${activeKey === "/taikhoan/nhanvien" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/taikhoan/nhanvien")}
               >
                 Nhân viên
               </Nav.Link>
@@ -159,26 +159,26 @@ function Sidebar({ isOpen, onNavigate }) {
         {/* Quản Lý Giảm giá với submenu */}
         <Nav.Item className="mb-3">
           <Nav.Link
-            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/discount" ? "fw-bold" : ""}`}
-            onClick={() => toggleSubMenu("/discount")}
+            className={`d-flex align-items-center justify-content-between text-dark ${openSubMenu === "/giamgia" ? "fw-bold" : ""}`}
+            onClick={() => toggleSubMenu("/giamgia")}
           >
             <div className="d-flex align-items-center">
               <FaTags className="me-2" />
               {isOpen && "Giảm giá"}
             </div>
-            {isOpen && (openSubMenu === "/discount" ? <FaChevronDown /> : <FaChevronRight />)}
+            {isOpen && (openSubMenu === "/giamgia" ? <FaChevronDown /> : <FaChevronRight />)}
           </Nav.Link>
-          {openSubMenu === "/discount" && isOpen && (
+          {openSubMenu === "/giamgia" && isOpen && (
             <Nav className="flex-column ms-4">
               <Nav.Link
-                className={`text-dark ${activeKey === "/discount/dotgiamgia" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/discount/dotgiamgia")}
+                className={`text-dark ${activeKey === "/giamgia/dotgiamgia" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/giamgia/dotgiamgia")}
               >
                 Đợt giảm giá
               </Nav.Link>
               <Nav.Link
-                className={`text-dark ${activeKey === "/discount/phieugiamgia" ? "fw-bold" : ""}`}
-                onClick={() => handleClick("/discount/phieugiamgia")}
+                className={`text-dark ${activeKey === "/giamgia/phieugiamgia" ? "fw-bold" : ""}`}
+                onClick={() => handleClick("/giamgia/phieugiamgia")}
               >
                 Phiếu giảm giá
               </Nav.Link>

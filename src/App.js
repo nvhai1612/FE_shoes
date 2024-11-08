@@ -7,6 +7,7 @@ import PosOrderPage from './pages/PosOrderPage';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProductManagement from './pages/ProductManagement';
+import AccountManagement from './pages/AccountManagement';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -34,12 +35,12 @@ function App() {
         {/* Cấu hình Routes để render đúng component */}
         <div className="p-4">
           <Routes>
+            <Route path="/thongke" element={<div>Thống kê</div>} />
             <Route path="/banhangtaiquay" element={<PosPage />} />
             <Route path="/hoadon" element={<PosOrderPage />} />
-            <Route  path="/product/*" element={<ProductManagement />} />
-            <Route path="/taikhoan" element={<div>Quản Lý Tài Khoản</div>} />
+            <Route  path="/sanpham/*" element={<ProductManagement />} />
+            <Route path="/taikhoan/*" element={<AccountManagement />} />
             <Route path="/giamgia" element={<div>Giảm giá</div>} />
-            <Route path="/thongke" element={<div>Thống kê</div>} />
           </Routes>
         </div>
       </div>

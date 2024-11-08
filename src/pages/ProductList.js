@@ -18,12 +18,12 @@ function ProductList() {
 
   // Hàm điều hướng tới trang ProductVariantsPage
   const handleViewProductVariants = () => {
-    navigate('/product/quanlybienthesanpham');
+    navigate('/sanpham/quanlybienthesanpham');
   };
 
   // Hàm điều hướng tới trang AddProductPage
   const handleAddProduct = () => {
-    navigate('/product/danhsachsanpham/themsanpham'); // Đường dẫn của AddProductPage
+    navigate('/sanpham/danhsachsanpham/themsanpham'); // Đường dẫn của AddProductPage
   };
 
   return (

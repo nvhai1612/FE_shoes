@@ -1,90 +1,245 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Form, Button, Container, Row, Col, InputGroup } from 'react-bootstrap';
-import { FaSearch, FaEye } from 'react-icons/fa'; // Đổi từ FaFilter thành FaSearch
-import { useNavigate } from 'react-router-dom';
+import { Table, Form, Button, Container, Row, Col, InputGroup, Modal } from 'react-bootstrap';
+import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SoleTypeList() {
   const [soleTypes, setSoleTypes] = useState([]);
-  const navigate = useNavigate();
+  const [editSoleTypeId, setEditSoleTypeId] = useState(null);
+  const [editingSoleType, setEditingSoleType] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newSoleTypeName, setNewSoleTypeName] = useState('');
+  const userName = localStorage.getItem('userName');  // Lấy tên người dùng từ localStorage
 
   useEffect(() => {
-    const data = [
-      { id: 1, name: "Đế Giày Cao Su", description: "Đế giày bền, chống trơn trượt", createdAt: "01/06/2024" },
-      { id: 2, name: "Đế Giày Da", description: "Đế giày sang trọng, bền lâu", createdAt: "15/07/2024" },
-      // Thêm dữ liệu SoleType khác nếu cần
-    ];
-    setSoleTypes(data);
+    // Gọi API backend để lấy dữ liệu đế giày
+    axios.get('http://localhost:8080/api/de-giay')
+        .then((response) => {
+          setSoleTypes(response.data);
+        })
+        .catch((error) => {
+          console.error("There was an error fetching the sole types!", error);
+          toast.error('Không thể tải danh sách đế giày');
+        });
   }, []);
 
-  // Hàm điều hướng tới trang AddSoleTypePage
   const handleAddSoleType = () => {
-    navigate('/product/degiay'); // Đường dẫn của AddSoleTypePage
+    setShowAddModal(true);
   };
 
-  // Hàm điều hướng tới trang ViewSoleTypePage
-  const handleViewSoleType = () => {
-    navigate('/product/degiay/themdegiay');
+  const handleSaveNewSoleType = () => {
+    if (newSoleTypeName.trim()) {
+        const newSoleType = {
+            tenDeGiay: newSoleTypeName,
+            trangThai: 1,
+            ngayTao: new Date().toISOString(),
+            nguoiTao:userName ? userName : "Admin",  // Nếu có tên người dùng, sử dụng nó; nếu không, dùng "Admin"
+        };
+
+
+        // axios.post('/api/de-giay', newSoleType)
+        axios.post('http://localhost:8080/api/de-giay', newSoleType)
+          .then((response) =>
+        {
+            setSoleTypes([...soleTypes, response.data]);
+            setNewSoleTypeName('');
+            setShowAddModal(false);
+            toast.success('Thêm đế giày mới thành công!');
+          })
+          .catch((error) => {
+            toast.error('Lỗi khi thêm đế giày mới');
+          });
+    } else {
+      toast.error('Vui lòng nhập tên đế giày');
+    }
+  };
+
+  const handleEditSoleType = (id) => {
+    const soleType = soleTypes.find(item => item.id === id);
+    setEditingSoleType(soleType);
+    setEditSoleTypeId(id);
+  };
+
+  const handleSaveChanges = () => {
+    // axios.put(`/api/de-giay/${editSoleTypeId}`, editingSoleType)
+      axios.put(`http://localhost:8080/api/de-giay/${editSoleTypeId}`, editingSoleType)
+        .then((response) => {
+          setSoleTypes(soleTypes.map(soleType =>
+              soleType.id === editSoleTypeId ? response.data : soleType
+          ));
+          toast.success('Cập nhật đế giày thành công!');
+          setEditSoleTypeId(null);
+          setEditingSoleType(null);
+        })
+        .catch((error) => {
+          toast.error('Lỗi khi cập nhật đế giày');
+        });
+  };
+
+  const handleDeleteSoleType = (id) => {
+    if (window.confirm('Bạn có chắc chắn muốn xoá đế giày này không?')) {
+        axios.delete(`http://localhost:8080/api/de-giay/${id}`)
+          .then(() => {
+            setSoleTypes(soleTypes.filter(soleType => soleType.id !== id));
+            toast.success('Xoá đế giày thành công!');
+          })
+          .catch((error) => {
+            toast.error('Lỗi khi xoá đế giày');
+          });
+    }
   };
 
   return (
-    <Container>
-      <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Quản lý đế giày</h2>
+      <Container>
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Quản lý đế giày</h2>
 
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '10px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FaSearch style={{ marginRight: '8px' }} /> {/* Biểu tượng tìm kiếm */}
-          <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tìm kiếm</span>
-        </div>
-      </div>
-      <hr />
+        <ToastContainer position="top-right" autoClose={3000} />
 
-      <div className="filter-section mb-3">
-        <Row>
-          <Col md={6}>
-            <InputGroup>
-              <Form.Control placeholder="Tìm đế giày" />
-              <Button variant="outline-secondary">Tìm</Button>
-            </InputGroup>
-          </Col>
-        </Row>
-
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Danh sách đế giày</span>
-          <Button style={{ backgroundColor: '#4CAF50', border: 'none' }} onClick={handleAddSoleType}>+ Thêm đế giày</Button>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '10px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <FaSearch style={{ marginRight: '8px' }} />
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tìm kiếm</span>
+          </div>
         </div>
         <hr />
-      </div>
 
-      <Table striped bordered hover style={{ marginTop: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <thead style={{ backgroundColor: '#F8E7CA' }}>
+        <div className="filter-section mb-3">
+          <Row>
+            <Col md={6}>
+              <InputGroup>
+                <Form.Control placeholder="Tìm đế giày" />
+                <Button variant="outline-secondary">Tìm</Button>
+              </InputGroup>
+            </Col>
+          </Row>
+
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Danh sách đế giày</span>
+            <Button style={{ backgroundColor: '#4CAF50', border: 'none' }} onClick={handleAddSoleType}>+ Thêm đế giày</Button>
+          </div>
+          <hr />
+        </div>
+
+        <Table striped bordered hover style={{ marginTop: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <thead style={{ backgroundColor: '#F8E7CA' }}>
           <tr>
             <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Tên đế giày</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Mô tả</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Ngày tạo</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Người tạo</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Lần cập nhật cuối</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Người cập nhật</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Trạng thái</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           {soleTypes.map((soleType, index) => (
-            <tr key={soleType.id}>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.name}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.description}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.createdAt}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>
-                <Button variant="link" onClick={handleViewSoleType}><FaEye /></Button>
-              </td>
-            </tr>
+              <tr key={soleType.id}>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.tenDeGiay}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{new Date(soleType.ngayTao).toLocaleDateString()}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.nguoiTao}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{new Date(soleType.lanCapNhatCuoi).toLocaleDateString()}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.nguoiCapNhat}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{soleType.trangThai===1 ? "Đang bán" : "Ngừng bán"}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>
+                  <Button variant="link" onClick={() => handleEditSoleType(soleType.id)}>
+                    <FaEdit />
+                  </Button>
+                  <Button variant="link" className="text-danger" onClick={() => handleDeleteSoleType(soleType.id)}>
+                    <FaTrash />
+                  </Button>
+                </td>
+              </tr>
           ))}
-        </tbody>
-      </Table>
-    </Container>
+          </tbody>
+        </Table>
+
+        {/* Modal chỉnh sửa đế giày */}
+        {editSoleTypeId && (
+            <Modal show={!!editSoleTypeId} onHide={() => setEditSoleTypeId(null)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Chỉnh sửa đế giày</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="soleTypeName">
+                            <Form.Label>Tên đế giày</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={editingSoleType?.tenDeGiay || ''}
+                                onChange={(e) => setEditingSoleType({ ...editingSoleType, tenDeGiay: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="soleTypeStatus" className="mt-3">
+                            <Form.Label>Trạng thái</Form.Label>
+                            <div>
+                                <Form.Check
+                                    type="radio"
+                                    label="Đang bán"
+                                    name="status"
+                                    checked={editingSoleType?.trangThai === 1}
+                                    onChange={() => setEditingSoleType({ ...editingSoleType, trangThai: 1 })}
+                                />
+                                <Form.Check
+                                    type="radio"
+                                    label="Ngừng bán"
+                                    name="status"
+                                    checked={editingSoleType?.trangThai === 0}
+                                    onChange={() => setEditingSoleType({ ...editingSoleType, trangThai: 0 })}
+                                />
+                            </div>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setEditSoleTypeId(null)}>
+                        Đóng
+                    </Button>
+                    <Button variant="primary" onClick={handleSaveChanges}>
+                        Lưu thay đổi
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+        )}
+
+        {/* Modal thêm đế giày */}
+        <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Thêm đế giày mới</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="newSoleTypeName">
+                <Form.Label>Tên đế giày</Form.Label>
+                <Form.Control
+                    type="text"
+                    value={newSoleTypeName}
+                    onChange={(e) => setNewSoleTypeName(e.target.value)}
+                    placeholder="Nhập tên đế giày"
+                />
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+              Đóng
+            </Button>
+            <Button variant="primary" onClick={handleSaveNewSoleType}>
+              Thêm
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Container>
   );
 }
 

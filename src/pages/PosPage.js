@@ -1,15 +1,16 @@
 // src/pages/PosPage.js
 import React, { useState } from 'react';
 import { Button, Container, Row, Col, Nav } from 'react-bootstrap';
-import { FaTimesCircle } from 'react-icons/fa';
+import { FaTimesCircle, FaCreditCard } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProductTable from '../components/ProductTable';
+import shoeImage from '../assets/logo.png';
 
 function PosPage() {
   const [products, setProducts] = useState([
-    { id: 1, name: 'Giày BerryShoes', price: 1200000, discountPrice: 1000000, size: 38, quantity: 2 },
-    { id: 2, name: 'Giày BerryShoes', price: 1200000, discountPrice: 1000000, size: 39, quantity: 1 },
+    { id: 1, name: 'Giày BerryShoes', price: 1200000, discountPrice: 1000000, size: 38, quantity: 2, image: shoeImage },
+    { id: 2, name: 'Giày BerryShoes', price: 1200000, discountPrice: 1000000, size: 39, quantity: 1, image: shoeImage },
   ]);
   const [orders, setOrders] = useState([]);
   const [activeOrder, setActiveOrder] = useState(null);
@@ -22,6 +23,20 @@ function PosPage() {
     } else {
       toast.warn('Tối đa 5 hoá đơn');
     }
+  };
+
+  const handleAddProduct = () => {
+    const newProduct = { 
+      id: products.length + 1, 
+      name: 'Giày BerryShoes', 
+      price: 1200000, 
+      discountPrice: 1000000, 
+      size: 40, 
+      quantity: 1, 
+      image: shoeImage 
+    };
+    setProducts([...products, newProduct]);
+    toast.success('Đã thêm sản phẩm mới vào đơn hàng');
   };
 
   const handleDeleteOrder = (orderId) => {
@@ -46,6 +61,9 @@ function PosPage() {
   };
 
   const totalAmount = products.reduce((sum, product) => sum + product.discountPrice * product.quantity, 0);
+  const shippingFee = 0;
+  const discountAmount = totalAmount * 0.2; // Giả sử giảm 20%
+  const finalAmount = totalAmount - discountAmount;
 
   return (
     <Container>
@@ -66,7 +84,6 @@ function PosPage() {
         </Button>
       </div>
 
-      {/* Thanh tab hóa đơn */}
       <Nav variant="tabs">
         {orders.map((order) => (
           <Nav.Item key={order.id}>
@@ -95,7 +112,18 @@ function PosPage() {
       </Nav>
       <hr/>
 
-      {/* Khu vực bảng sản phẩm */}
+      {orders.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+          <Button 
+            variant="outline-secondary" 
+            style={{ backgroundColor: '#F8E7CA', color: '#333', borderColor: '#F8E7CA' }}
+            onClick={handleAddProduct}
+          >
+            + Thêm sản phẩm
+          </Button>
+        </div>
+      )}
+
       <ProductTable 
         products={products} 
         handleIncrement={handleIncrement} 
@@ -103,28 +131,88 @@ function PosPage() {
         handleDelete={handleDelete} 
       />
 
-      {/* Khu vực tổng tiền */}
       <Row className="mt-4">
         <Col md={12} className="text-end">
           <h5><strong>Tổng tiền: {totalAmount.toLocaleString()} đ</strong></h5>
         </Col>
       </Row>
 
-      {/* Thông tin khách hàng */}
       <div className="p-3 mt-4 border-top">
-        <h5>Tài khoản</h5>
-        <div className="d-flex justify-content-between align-items-center">
-          <p className="mb-0 me-3">Tên khách hàng: khách sĩ</p>
+        {/* Section "Tài khoản" */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h5 style={{ marginBottom: '0' }}>Tài khoản</h5>
+          <Button variant="outline-secondary" style={{ backgroundColor: '#F8E7CA', color: '#333', borderColor: '#F8E7CA' }}>
+            Chọn tài khoản
+          </Button>
+        </div>
+        <hr />
+        
+        {/* Section "Tên khách hàng" */}
+        <div className="d-flex justify-content-between align-items-center mt-2">
+          <p className="mb-0">Tên khách hàng: khách lẻ</p>
           <div>
-            <Button variant="outline-secondary" style={{ backgroundColor: '#F8E7CA', color: '#333', borderColor: '#F8E7CA' }}>
-              Chọn tài khoản
-            </Button>
-            <Button variant="outline-secondary" style={{ backgroundColor: '#F8E7CA', color: '#333', borderColor: '#F8E7CA', marginLeft: '10px' }}>
-              Thêm khách hàng
-            </Button>
+            <input
+              type="text"
+              placeholder="PGG613"
+              style={{
+                width: '80px',
+                marginLeft: '10px',
+                padding: '5px',
+                borderRadius: '4px',
+                border: '1px solid #ced4da'
+              }}
+            />
+            <input
+              type="number"
+              placeholder="Phần trăm giảm"
+              style={{
+                width: '100px',
+                marginLeft: '10px',
+                padding: '5px',
+                borderRadius: '4px',
+                border: '1px solid #ced4da'
+              }}
+            />
           </div>
         </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <span>Tiền hàng: </span>
+          <span>{totalAmount.toLocaleString()} VND</span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <span>Phí vận chuyển: </span>
+          <span>{shippingFee.toLocaleString()} VND</span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <span>Giảm giá: </span>
+          <span>{discountAmount.toLocaleString()} VND</span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold', color: 'red', marginBottom: '8px' }}>
+          <span>Tổng số tiền: </span>
+          <span>{finalAmount.toLocaleString()} VND</span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <span>Khách thanh toán: </span>
+          <span><FaCreditCard /></span>
+        </div>
+        
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 'bold', color: 'red', marginBottom: '8px' }}>
+          <span>Tiền thiếu: </span>
+          <span>{finalAmount.toLocaleString()} VND</span>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+          <Button variant="outline-secondary" style={{ backgroundColor: '#F8E7CA', color: '#333', borderColor: '#F8E7CA' }}>
+            Thanh toán
+          </Button>
+        </div>
       </div>
+
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnFocusLoss draggable pauseOnHover />
     </Container>
   );

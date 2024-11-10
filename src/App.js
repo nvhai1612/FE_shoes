@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProductManagement from './pages/ProductManagement';
 import AccountManagement from './pages/AccountManagement';
+import VoucherManagement from './pages/VoucherManagement';
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -40,7 +41,7 @@ function App() {
             <Route path="/hoadon" element={<PosOrderPage />} />
             <Route  path="/sanpham/*" element={<ProductManagement />} />
             <Route path="/taikhoan/*" element={<AccountManagement />} />
-            <Route path="/giamgia" element={<div>Giảm giá</div>} />
+            <Route path="/giamgia/*" element={<VoucherManagement />} />
           </Routes>
         </div>
       </div>

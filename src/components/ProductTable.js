@@ -1,7 +1,7 @@
 // src/components/ProductTable.js
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaTrash } from 'react-icons/fa';
 import shoeImage from '../assets/logo.png';
 
 function ProductTable({ products, handleIncrement, handleDecrement, handleDelete }) {
@@ -41,7 +41,6 @@ function ProductTable({ products, handleIncrement, handleDecrement, handleDelete
             </td>
             <td className="text-start">{(product.discountPrice * product.quantity).toLocaleString()} đ</td>
             <td>
-              <Button variant="link"><FaEdit /></Button>
               <Button variant="link" className="text-danger" onClick={() => handleDelete(product.id)}><FaTrash /></Button>
             </td>
           </tr>
@@ -50,5 +49,4 @@ function ProductTable({ products, handleIncrement, handleDecrement, handleDelete
     </table>
   );
 }
-test
 export default ProductTable;

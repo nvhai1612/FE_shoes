@@ -9,8 +9,8 @@ function ProductList() {
 
   useEffect(() => {
     const data = [
-      { id: 1, code: "P2066123", name: "Giày Sneaker BerryShoes", quantity: 160, price: "500,000 VND", date: "22/06/2024" },
-      { id: 2, code: "P2066124", name: "Giày Running BerryShoes", quantity: 100, price: "600,000 VND", date: "25/07/2024" },
+      { id: 1, name: "Giày Sneaker BerryShoes", date: "22/06/2024" , quantity: 160, status: "Đang bán" },
+      { id: 2, name: "Giày Running BerryShoes", date: "25/07/2024", quantity: 100, status: "Đang bán" },
       // Thêm dữ liệu sản phẩm khác nếu cần
     ];
     setProducts(data);
@@ -64,11 +64,10 @@ function ProductList() {
         <thead style={{ backgroundColor: '#F8E7CA' }}>
           <tr>
             <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Mã sản phẩm</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Tên sản phẩm</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Số lượng tồn</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Giá bán</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Ngày tạo</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Số lượng</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Trạng thái</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
           </tr>
         </thead>
@@ -76,11 +75,10 @@ function ProductList() {
           {products.map((product, index) => (
             <tr key={product.id}>
               <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>{product.code}</td>
               <td style={{ padding: '10px', textAlign: 'center' }}>{product.name}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{product.quantity}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{product.price}</td>
               <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>{product.date}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.quantity}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.status}</td>
               <td style={{ padding: '10px', textAlign: 'center' }}>
                 <Button variant="link" onClick={handleViewProductVariants}><FaEye /></Button>
               </td>

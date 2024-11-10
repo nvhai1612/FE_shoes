@@ -139,12 +139,6 @@ function ProductVariantsPage() {
           </Col>
         </Row>
         <hr/>
-
-        <div className="text-end mt-3">
-          <Button variant="secondary" className="me-2">Tất cả</Button>
-          <Button variant="primary">Chỉnh số lượng và giá chung</Button>
-        </div>
-        <hr/>
       </div>
 
       <Table striped bordered hover style={{ marginTop: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>

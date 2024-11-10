@@ -3,7 +3,7 @@ import { Nav } from 'react-bootstrap';
 import { FaChartPie, FaCashRegister, FaFileInvoice, FaProductHunt, FaUser, FaTags, FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import logoImage from '../assets/logo.png';
 
-function Sidebar({ isOpen, onNavigate }) {
+function Sidebar({ isOpen = true, onNavigate }) {
   const [activeKey, setActiveKey] = useState("/thongke");
   const [sidebarStyle, setSidebarStyle] = useState({ width: '250px', transition: 'width 0.3s' });
   const [openSubMenu, setOpenSubMenu] = useState(null);

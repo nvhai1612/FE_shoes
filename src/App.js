@@ -1,50 +1,68 @@
-// src/App.js
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar';
-import AppNavbar from './components/AppNavbar';
-import PosPage from './pages/PosPage';
-import PosOrderPage from './pages/PosOrderPage';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ProductManagement from './pages/ProductManagement';
-import AccountManagement from './pages/AccountManagement';
-import VoucherManagement from './pages/VoucherManagement';
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import AppNavbar from "./components/AppNavbar";
+import PosPage from "./pages/PosPage";
+import PosOrderPage from "./pages/PosOrderPage";
+import ProductManagement from "./pages/ProductManagement";
+import AccountManagement from "./pages/AccountManagement";
+import VoucherManagement from "./pages/VoucherManagement";
+import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
+import ForgotPasswordPage from "./components/ForgotPasswordPage";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate(); // Sử dụng useNavigate để chuyển trang khi sidebar thay đổi
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Đặt mặc định là true để Sidebar mở
+  const navigate = useNavigate();
 
-  // Hàm để thu gọn/mở rộng sidebar
+  const isLoggedIn = localStorage.getItem("isLoggedIn");
+
+  // Hàm thu gọn/mở rộng sidebar
   const toggleSidebar = () => {
-    setIsSidebarOpen(prev => !prev);
+    setIsSidebarOpen((prev) => !prev);
   };
 
-  // Hàm để chuyển trang, sẽ gọi điều hướng từ Sidebar
   const handleNavigate = (page) => {
-    navigate(page.replace("#", "/")); // Loại bỏ dấu '#' để chuyển đúng URL
+    navigate(page.replace("/"));
   };
 
   return (
     <div className="d-flex">
-      {/* Sidebar cố định bên trái, truyền trạng thái isOpen và hàm điều hướng */}
-      <Sidebar isOpen={isSidebarOpen} onNavigate={handleNavigate} />
+      {/* Nếu chưa đăng nhập và đang ở các trang không phải đăng nhập, đăng ký hoặc quên mật khẩu thì sẽ điều hướng về đăng nhập */}
+      {!isLoggedIn ? (
+        <Routes>
+          <Route path="/dangnhap" element={<LoginPage />} />
+          <Route path="/dangky" element={<RegisterPage />} />
+          <Route path="/quenmatkhau" element={<ForgotPasswordPage />} />
+          <Route path="*" element={<Navigate to="/dangnhap" replace />} />{" "}
+          {/* Chuyển hướng mọi route khác về trang đăng nhập */}
+        </Routes>
+      ) : (
+        <>
+          <Sidebar isOpen={isSidebarOpen} onNavigate={handleNavigate} />
 
-      {/* Khu vực nội dung chính */}
-      <div style={{ flex: 1 }}>
-        <AppNavbar onToggleSidebar={toggleSidebar} />
-        
-        {/* Cấu hình Routes để render đúng component */}
-        <div className="p-4">
-          <Routes>
-            <Route path="/thongke" element={<div>Thống kê</div>} />
-            <Route path="/banhangtaiquay" element={<PosPage />} />
-            <Route path="/hoadon" element={<PosOrderPage />} />
-            <Route  path="/sanpham/*" element={<ProductManagement />} />
-            <Route path="/taikhoan/*" element={<AccountManagement />} />
-            <Route path="/giamgia/*" element={<VoucherManagement />} />
-          </Routes>
-        </div>
-      </div>
+          <div style={{ flex: 1 }}>
+            <AppNavbar onToggleSidebar={toggleSidebar} />
+
+            <div className="p-4">
+              <Routes>
+                <Route path="/banhangtaiquay" element={<PosPage />} />
+                <Route path="/hoadon" element={<PosOrderPage />} />
+                <Route path="/sanpham/*" element={<ProductManagement />} />
+                <Route path="/taikhoan/*" element={<AccountManagement />} />
+                <Route path="/giamgia/*" element={<VoucherManagement />} />
+              </Routes>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -52,7 +70,10 @@ function App() {
 export default function AppWrapper() {
   return (
     <Router>
-      <App />
+      <Routes>
+        <Route path="/dangnhap" element={<LoginPage />} />
+        <Route path="/*" element={<App />} />
+      </Routes>
     </Router>
   );
 }

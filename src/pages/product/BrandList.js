@@ -1,210 +1,227 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Form, Button, Container, Row, Col, InputGroup, Modal } from 'react-bootstrap';
-import { FaSearch, FaEdit, FaTrash } from 'react-icons/fa';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Button, Table, Form, Modal } from 'react-bootstrap';
 
-function BrandList() {
-  const [brands, setBrands] = useState([]);
-  const [editBrandId, setEditBrandId] = useState(null);
-  const [editingBrand, setEditingBrand] = useState(null);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newBrandName, setNewBrandName] = useState('');
+const ThuongHieuManagement = () => {
+  const [thuongHieus, setThuongHieus] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedThuongHieu, setSelectedThuongHieu] = useState(null);
+  const [tenThuongHieu, setTenThuongHieu] = useState('');
+  const [trangThai, setTrangThai] = useState(true); // true = active, false = inactive
+  const [nguoiTao, setNguoiTao] = useState('');
+  const [nguoiCapNhat, setNguoiCapNhat] = useState('');
+  const [lanCapNhatCuoi, setLanCapNhatCuoi] = useState('');
+  const [ngayTao, setNgayTao] = useState('');
+  const [isEdit, setIsEdit] = useState(false);
+
+  // Fetch danh sách thương hiệu
+  const fetchThuongHieus = () => {
+    axios.get('http://localhost:8080/api/thuong-hieu')
+      .then(response => {
+        setThuongHieus(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching Thuong Hieu', error);
+      });
+  };
 
   useEffect(() => {
-    const data = [
-      { id: 1, name: "Nike", createdAt: "01/06/2024", status: "Đang bán" },
-      { id: 2, name: "Adidas", createdAt: "15/07/2024", status: "Đang bán" },
-    ];
-    setBrands(data);
+    fetchThuongHieus();
   }, []);
 
-  const handleAddBrand = () => {
-    setShowAddModal(true);
-  };
-
-  const handleSaveNewBrand = () => {
-    if (newBrandName.trim()) {
-      const newBrand = {
-        id: brands.length + 1,
-        name: newBrandName,
-        createdAt: new Date().toLocaleDateString(),
-        status: "Đang bán",
-      };
-      setBrands([...brands, newBrand]);
-      setNewBrandName('');
-      setShowAddModal(false);
-      toast.success('Thêm thương hiệu mới thành công!');
+  // Xử lý mở modal để thêm hoặc sửa thương hiệu
+  const handleOpenModal = (thuongHieu = null) => {
+    if (thuongHieu) {
+      setSelectedThuongHieu(thuongHieu);
+      setTenThuongHieu(thuongHieu.tenThuongHieu);
+      setTrangThai(thuongHieu.trangThai);
+      setNguoiTao(thuongHieu.nguoiTao);
+      setNguoiCapNhat(thuongHieu.nguoiCapNhat);
+      setLanCapNhatCuoi(thuongHieu.lanCapNhatCuoi);
+      setNgayTao(thuongHieu.ngayTao);
+      setIsEdit(true);
     } else {
-      toast.error('Vui lòng nhập tên thương hiệu');
+      setSelectedThuongHieu(null);
+      setTenThuongHieu('');
+      setTrangThai(true);
+      setNguoiTao('');
+      setNguoiCapNhat('');
+      setLanCapNhatCuoi('');
+      setNgayTao('');
+      setIsEdit(false);
+    }
+    setShowModal(true);
+  };
+
+  // Xử lý lưu dữ liệu (thêm/sửa)
+  const handleSave = () => {
+    const data = {
+      tenThuongHieu,
+      trangThai,
+      nguoiTao,
+      nguoiCapNhat,
+      lanCapNhatCuoi,
+      ngayTao
+    };
+
+    if (isEdit && selectedThuongHieu) {
+      // Cập nhật thương hiệu
+      axios.put(`http://localhost:8080/api/thuong-hieu/${selectedThuongHieu.id}`, data)
+        .then(() => {
+          fetchThuongHieus();
+          setShowModal(false);
+        })
+        .catch(error => {
+          console.error('Error updating Thuong Hieu', error);
+        });
+    } else {
+      // Tạo mới thương hiệu
+      axios.post('http://localhost:8080/api/thuong-hieu', data)
+        .then(() => {
+          fetchThuongHieus();
+          setShowModal(false);
+        })
+        .catch(error => {
+          console.error('Error creating Thuong Hieu', error);
+        });
     }
   };
 
-  const handleEditBrand = (id) => {
-    const brand = brands.find(item => item.id === id);
-    setEditingBrand(brand);
-    setEditBrandId(id);
-  };
-
-  const handleSaveChanges = () => {
-    setBrands(brands.map(brand => 
-      brand.id === editingBrand.id ? editingBrand : brand
-    ));
-    toast.success('Cập nhật thương hiệu thành công!');
-    setEditBrandId(null);
-    setEditingBrand(null);
-  };
-
-  const handleDeleteBrand = (id) => {
-    if (window.confirm('Bạn có chắc chắn muốn xoá thương hiệu này không?')) {
-      setBrands(brands.filter(brand => brand.id !== id));
-      toast.success('Xoá thương hiệu thành công!');
-    }
+  // Xử lý xóa thương hiệu
+  const handleDelete = (id) => {
+    axios.delete(`http://localhost:8080/api/thuong-hieu/${id}`)
+      .then(() => {
+        fetchThuongHieus();
+      })
+      .catch(error => {
+        console.error('Error deleting Thuong Hieu', error);
+      });
   };
 
   return (
-    <Container>
-      <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Quản lý thương hiệu</h2>
+    <div>
+      <h2>Quản lý Thương Hiệu</h2>
+      <Button variant="primary" onClick={() => handleOpenModal()}>
+        Thêm Mới
+      </Button>
 
-      <ToastContainer position="top-right" autoClose={3000} />
-
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '10px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <FaSearch style={{ marginRight: '8px' }} />
-          <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tìm kiếm</span>
-        </div>
-      </div>
-      <hr />
-
-      <div className="filter-section mb-3">
-        <Row>
-          <Col md={6}>
-            <InputGroup>
-              <Form.Control placeholder="Tìm thương hiệu" />
-              <Button variant="outline-secondary">Tìm</Button>
-            </InputGroup>
-          </Col>
-        </Row>
-
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Danh sách thương hiệu</span>
-          <Button style={{ backgroundColor: '#4CAF50', border: 'none' }} onClick={handleAddBrand}>+ Thêm thương hiệu</Button>
-        </div>
-        <hr />
-      </div>
-
-      <Table striped bordered hover style={{ marginTop: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <thead style={{ backgroundColor: '#F8E7CA' }}>
+      <Table striped bordered hover className="mt-3">
+        <thead>
           <tr>
-            <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Tên thương hiệu</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Ngày tạo</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Trạng thái</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
+            <th>ID</th>
+            <th>Tên Thương Hiệu</th>
+            <th>Trạng Thái</th>
+            <th>Ngày Tạo</th>
+            <th>Người Tạo</th>
+            <th>Ngày Cập Nhật Cuối</th>
+            <th>Người Cập Nhật</th>
+            <th>Thao Tác</th>
           </tr>
         </thead>
         <tbody>
-          {brands.map((brand, index) => (
-            <tr key={brand.id}>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{brand.name}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{brand.createdAt}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{brand.status}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>
-                <Button variant="link" onClick={() => handleEditBrand(brand.id)}>
-                  <FaEdit />
-                </Button>
-                <Button variant="link" className="text-danger" onClick={() => handleDeleteBrand(brand.id)}>
-                  <FaTrash />
-                </Button>
+          {thuongHieus.map((th) => (
+            <tr key={th.id}>
+              <td>{th.id}</td>
+              <td>{th.tenThuongHieu}</td>
+              <td>{th.trangThai ? 'Kích Hoạt' : 'Tạm Dừng'}</td>
+              <td>{th.ngayTao}</td>
+              <td>{th.nguoiTao}</td>
+              <td>{th.lanCapNhatCuoi}</td>
+              <td>{th.nguoiCapNhat}</td>
+              <td>
+                <Button variant="warning" onClick={() => handleOpenModal(th)}>Sửa</Button>
+                <Button variant="danger" onClick={() => handleDelete(th.id)}>Xóa</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
 
-      {/* Modal chỉnh sửa thương hiệu */}
-      {editBrandId && (
-        <Modal show={true} onHide={() => setEditBrandId(null)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Chỉnh sửa thương hiệu</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="brandName">
-                <Form.Label>Tên thương hiệu</Form.Label>
-                <Form.Control 
-                  type="text" 
-                  value={editingBrand?.name || ''} 
-                  onChange={(e) => setEditingBrand({ ...editingBrand, name: e.target.value })}
-                />
-              </Form.Group>
-              <Form.Group controlId="brandStatus" className="mt-3">
-                <Form.Label>Trạng thái</Form.Label>
-                <div>
-                  <Form.Check 
-                    type="radio" 
-                    label="Đang bán" 
-                    name="status" 
-                    checked={editingBrand?.status === "Đang bán"} 
-                    onChange={() => setEditingBrand({ ...editingBrand, status: "Đang bán" })}
-                  />
-                  <Form.Check 
-                    type="radio" 
-                    label="Ngừng bán" 
-                    name="status" 
-                    checked={editingBrand?.status === "Ngừng bán"} 
-                    onChange={() => setEditingBrand({ ...editingBrand, status: "Ngừng bán" })}
-                  />
-                </div>
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setEditBrandId(null)}>
-              Hủy
-            </Button>
-            <Button variant="primary" onClick={handleSaveChanges}>
-              Lưu thay đổi
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
-
-      {/* Modal thêm thương hiệu mới */}
-      <Modal show={showAddModal} onHide={() => setShowAddModal(false)}>
+      {/* Modal để thêm/sửa thương hiệu */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Thêm mới thương hiệu</Modal.Title>
+          <Modal.Title>{isEdit ? 'Cập Nhật Thương Hiệu' : 'Thêm Mới Thương Hiệu'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="newBrandName">
-              <Form.Label>Thương hiệu</Form.Label>
+            <Form.Group controlId="formTenThuongHieu">
+              <Form.Label>Tên Thương Hiệu</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Tên thương hiệu"
-                value={newBrandName}
-                onChange={(e) => setNewBrandName(e.target.value)}
+                value={tenThuongHieu}
+                onChange={(e) => setTenThuongHieu(e.target.value)}
+                placeholder="Nhập tên thương hiệu"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formNguoiTao">
+              <Form.Label>Người Tạo</Form.Label>
+              <Form.Control
+                type="text"
+                value={nguoiTao}
+                onChange={(e) => setNguoiTao(e.target.value)}
+                placeholder="Nhập người tạo"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formNguoiCapNhat">
+              <Form.Label>Người Cập Nhật</Form.Label>
+              <Form.Control
+                type="text"
+                value={nguoiCapNhat}
+                onChange={(e) => setNguoiCapNhat(e.target.value)}
+                placeholder="Nhập người cập nhật"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formLanCapNhatCuoi">
+              <Form.Label>Lần Cập Nhật Cuối</Form.Label>
+              <Form.Control
+                type="text"
+                value={lanCapNhatCuoi}
+                onChange={(e) => setLanCapNhatCuoi(e.target.value)}
+                placeholder="Nhập lần cập nhật cuối"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formNgayTao">
+              <Form.Label>Ngày Tạo</Form.Label>
+              <Form.Control
+                type="text"
+                value={ngayTao}
+                onChange={(e) => setNgayTao(e.target.value)}
+                placeholder="Nhập ngày tạo"
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formTrangThai">
+              <Form.Label>Trạng Thái</Form.Label>
+              <Form.Check
+                type="radio"
+                label="Kích Hoạt"
+                checked={trangThai === true}
+                onChange={() => setTrangThai(true)}
+              />
+              <Form.Check
+                type="radio"
+                label="Tạm Dừng"
+                checked={trangThai === false}
+                onChange={() => setTrangThai(false)}
               />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
             Đóng
           </Button>
-          <Button variant="primary" onClick={handleSaveNewBrand}>
-            Lưu
+          <Button variant="primary" onClick={handleSave}>
+            {isEdit ? 'Cập Nhật' : 'Lưu'}
           </Button>
         </Modal.Footer>
       </Modal>
-    </Container>
+    </div>
   );
-}
+};
 
-export default BrandList;
+export default ThuongHieuManagement;

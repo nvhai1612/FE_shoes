@@ -77,7 +77,7 @@ function ForgotPasswordPage() {
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
+justifyContent: "center",
       }}
     >
       <Container className="d-flex justify-content-center align-items-center">
@@ -160,7 +160,7 @@ function ForgotPasswordPage() {
                   placeholder="Nhập mật khẩu mới"
                   value={newPassword}
                   onChange={handleInputChange}
-                  name="newPassword"
+name="newPassword"
                   required
                 />
                 <Form.Control.Feedback type="invalid">

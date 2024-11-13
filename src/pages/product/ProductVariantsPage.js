@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Table, Form, Button, Container, Row, Col, InputGroup, Modal } from 'react-bootstrap';
 import { FaEdit, FaTrash, FaFilter } from 'react-icons/fa';
 import shoeImage from '../../assets/logo.png';
@@ -8,22 +8,19 @@ import 'react-toastify/dist/ReactToastify.css';
 function ProductVariantsPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      code: 'VNA26354897',
-      image: shoeImage,
-      quantity: 200,
-      price: '920.000 VND',
-      brand: 'Nike',
-      material: 'Da',
-      sole: 'Cao su',
-      size: 42,
-      color: 'Trắng',
-    },
-    // Thêm các sản phẩm khác nếu cần
-  ]);
+  const [products, setProducts] = useState([]);
 
+  useEffect(() => {
+    // Giả sử bạn gọi một API để lấy dữ liệu sản phẩm
+    fetch('http://localhost:8080/api/san-pham-chi-tiet')
+        .then((response) => response.json())
+        .then((data) => {
+          setProducts(data);  // Set dữ liệu từ API vào state
+        })
+        .catch((error) => {
+          console.error('Lỗi khi lấy dữ liệu sản phẩm:', error);
+        });
+  }, []);
   const handleEditClick = (product) => {
     setEditingProduct(product);
     setShowEditModal(true);
@@ -168,17 +165,17 @@ function ProductVariantsPage() {
             products.map((product, index) => (
               <tr key={product.id}>
                 <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.code}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.maSanPhamChiTiet}</td>
                 <td style={{ padding: '10px', textAlign: 'center' }}>
                   <img src={product.image} alt={product.code} style={{ width: '50px' }} />
                 </td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.quantity}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.price}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.brand}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.material}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.sole}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.size}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{product.color}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.soLuong}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.giaTien}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.sanPham.thuongHieu.tenThuongHieu}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.sanPham.chatLieu.tenChatLieu}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.sanPham.deGiay.tenDeGiay}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.kichCo.tenKichCo}</td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>{product.mauSac.tenMauSac}</td>
                 <td style={{ padding: '10px', textAlign: 'center' }}>
                   <Button variant="link" onClick={() => handleEditClick(product)}><FaEdit /></Button>
                   <Button variant="link" className="text-danger" onClick={() => handleDeleteClick(product.id)}><FaTrash /></Button>

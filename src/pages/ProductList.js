@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Table, Form, Button, Container, Row, Col, InputGroup } from 'react-bootstrap';
 import { FaSearch, FaEye } from 'react-icons/fa'; // Đổi từ FaFilter thành FaSearch
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {toast} from "react-toastify";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    const data = [
-      { id: 1, code: "P2066123", name: "Giày Sneaker BerryShoes", quantity: 160, price: "500,000 VND", date: "22/06/2024" },
-      { id: 2, code: "P2066124", name: "Giày Running BerryShoes", quantity: 100, price: "600,000 VND", date: "25/07/2024" },
-      // Thêm dữ liệu sản phẩm khác nếu cần
-    ];
-    setProducts(data);
+    axios.get('http://localhost:8080/api/san-pham-chi-tiet')
+        .then(response => setProducts(response.data))
+        .catch(() => toast.error('Không thể tải danh sách dot giam gia'));
   }, []);
 
   // Hàm điều hướng tới trang ProductVariantsPage
@@ -66,7 +66,7 @@ function ProductList() {
             <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Mã sản phẩm</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Tên sản phẩm</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Số lượng tồn</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Số lượng</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Giá bán</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Ngày tạo</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
@@ -76,11 +76,11 @@ function ProductList() {
           {products.map((product, index) => (
             <tr key={product.id}>
               <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>{product.code}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{product.name}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{product.quantity}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{product.price}</td>
-              <td style={{ padding: '10px', whiteSpace: 'nowrap', textAlign: 'center' }}>{product.date}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.sanPham.maSanPham}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.sanPham.tenSanPham}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.soLuong}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.giaTien}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{product.ngayTao}</td>
               <td style={{ padding: '10px', textAlign: 'center' }}>
                 <Button variant="link" onClick={handleViewProductVariants}><FaEye /></Button>
               </td>

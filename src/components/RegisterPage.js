@@ -50,7 +50,7 @@ function RegisterPage() {
     >
       <Container
         className="d-flex justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
+        style={{ minHeight: "100vh", minWidth: "191vh" }}
       >
         <Card
           style={{

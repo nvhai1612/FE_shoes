@@ -1,41 +1,49 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Card } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"; // Thêm hook để điều hướng
+import { useNavigate, Link } from "react-router-dom"; // Sử dụng Link cho điều hướng
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import bglogin from "../assets/bglogin.jpg"; // Ảnh nền
-import logo from "../assets/logo.png"; // Import logo
+import logo from "../assets/logo.png"; // Logo
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(""); // Mã khôi phục
-  const [newPassword, setNewPassword] = useState(""); // Mật khẩu mới
-  const [confirmPassword, setConfirmPassword] = useState(""); // Xác nhận mật khẩu
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [validated, setValidated] = useState(false);
-  const [isCodeSent, setIsCodeSent] = useState(false); // Kiểm tra xem mã đã được gửi chưa
-  const [isCodeValid, setIsCodeValid] = useState(false); // Kiểm tra tính hợp lệ của mã
-  const navigate = useNavigate(); // Hook để điều hướng người dùng
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isCodeValid, setIsCodeValid] = useState(false);
+  const navigate = useNavigate();
 
-  // Handle change cho email, mã khôi phục, mật khẩu và xác nhận mật khẩu
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === "email") setEmail(value);
-    if (name === "code") setCode(value);
-    if (name === "newPassword") setNewPassword(value);
-    if (name === "confirmPassword") setConfirmPassword(value);
+    switch (name) {
+      case "email":
+        setEmail(value);
+        break;
+      case "code":
+        setCode(value);
+        break;
+      case "newPassword":
+        setNewPassword(value);
+        break;
+      case "confirmPassword":
+        setConfirmPassword(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSendCode = (e) => {
     e.preventDefault();
     setValidated(true);
 
-    // Gửi mã khôi phục qua email
     if (email) {
       toast.success("Mã khôi phục đã được gửi đến email của bạn!");
       setIsCodeSent(true);
-      // Thực hiện gửi mã qua email tại đây
-      // Ví dụ: Gửi yêu cầu đến server để gửi email
     } else {
       toast.error("Vui lòng nhập email hợp lệ!");
     }
@@ -43,10 +51,7 @@ function ForgotPasswordPage() {
 
   const handleVerifyCode = (e) => {
     e.preventDefault();
-
-    // Kiểm tra tính hợp lệ của mã khôi phục
     if (code === "123456") {
-      // Giả sử mã là 123456 cho ví dụ
       setIsCodeValid(true);
       toast.success("Mã khôi phục hợp lệ! Bạn có thể thay đổi mật khẩu.");
     } else {
@@ -56,18 +61,13 @@ function ForgotPasswordPage() {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-
     if (newPassword && newPassword === confirmPassword) {
       toast.success("Mật khẩu đã được thay đổi thành công!");
-
-      // Sau khi thay đổi mật khẩu thành công, chuyển hướng về trang đăng nhập
       setTimeout(() => {
-        navigate("/dangnhap"); // Chuyển hướng về trang đăng nhập
-      }, 2000); // Đợi 2 giây trước khi chuyển hướng
-    } else if (newPassword !== confirmPassword) {
-      toast.error("Mật khẩu và xác nhận mật khẩu không khớp!");
+        navigate("/dangnhap");
+      }, 2000);
     } else {
-      toast.error("Vui lòng nhập mật khẩu mới.");
+      toast.error("Mật khẩu và xác nhận mật khẩu không khớp!");
     }
   };
 
@@ -75,14 +75,18 @@ function ForgotPasswordPage() {
     <div
       style={{
         backgroundImage: `url(${bglogin})`,
-        backgroundColor: "#f8f9fa",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <Container className="d-flex justify-content-center align-items-center">
+      <Container
+        className="d-flex justify-content-center align-items-center"
+        style={{ minHeight: "100vh", minWidth: "191vh" }}
+      >
         <Card
           style={{
             width: "400px",
@@ -100,7 +104,6 @@ function ForgotPasswordPage() {
             <h4 className="mt-2">Quên Mật Khẩu</h4>
           </div>
 
-          {/* Bước 1: Nhập email để gửi mã */}
           {!isCodeSent && (
             <Form noValidate validated={validated} onSubmit={handleSendCode}>
               <Form.Group controlId="formEmail" className="mb-3">
@@ -108,23 +111,21 @@ function ForgotPasswordPage() {
                 <Form.Control
                   type="email"
                   placeholder="Nhập email của bạn"
+                  name="email"
                   value={email}
                   onChange={handleInputChange}
-                  name="email"
                   required
                 />
                 <Form.Control.Feedback type="invalid">
                   Vui lòng nhập email hợp lệ.
                 </Form.Control.Feedback>
               </Form.Group>
-
               <Button variant="success" type="submit" className="w-100 mt-3">
                 Gửi yêu cầu
               </Button>
             </Form>
           )}
 
-          {/* Bước 2: Nhập mã khôi phục */}
           {isCodeSent && !isCodeValid && (
             <Form noValidate validated={validated} onSubmit={handleVerifyCode}>
               <Form.Group controlId="formCode" className="mb-3">
@@ -132,23 +133,21 @@ function ForgotPasswordPage() {
                 <Form.Control
                   type="text"
                   placeholder="Nhập mã khôi phục"
+                  name="code"
                   value={code}
                   onChange={handleInputChange}
-                  name="code"
                   required
                 />
                 <Form.Control.Feedback type="invalid">
                   Vui lòng nhập mã khôi phục.
                 </Form.Control.Feedback>
               </Form.Group>
-
               <Button variant="success" type="submit" className="w-100 mt-3">
                 Xác nhận mã
               </Button>
             </Form>
           )}
 
-          {/* Bước 3: Nhập mật khẩu mới và xác nhận mật khẩu */}
           {isCodeValid && (
             <Form
               noValidate
@@ -160,9 +159,9 @@ function ForgotPasswordPage() {
                 <Form.Control
                   type="password"
                   placeholder="Nhập mật khẩu mới"
+                  name="newPassword"
                   value={newPassword}
                   onChange={handleInputChange}
-                  name="newPassword"
                   required
                 />
                 <Form.Control.Feedback type="invalid">
@@ -175,9 +174,9 @@ function ForgotPasswordPage() {
                 <Form.Control
                   type="password"
                   placeholder="Xác nhận mật khẩu mới"
+                  name="confirmPassword"
                   value={confirmPassword}
                   onChange={handleInputChange}
-                  name="confirmPassword"
                   required
                 />
                 <Form.Control.Feedback type="invalid">
@@ -192,24 +191,16 @@ function ForgotPasswordPage() {
           )}
 
           <div className="text-center mt-3">
-            <a
-              href="/dangnhap"
+            <Link
+              to="/dangnhap"
               style={{ color: "#28a745", textDecoration: "none" }}
             >
               Quay lại Đăng nhập
-            </a>
+            </Link>
           </div>
         </Card>
       </Container>
-
-      {/* Toast Container */}
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        closeOnClick
-        pauseOnHover
-      />
+      <ToastContainer />
     </div>
   );
 }

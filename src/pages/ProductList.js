@@ -72,10 +72,12 @@ function ProductList() {
 
       <div className="filter-section mb-3">
         <Row>
-          <Col md={6}>
+          <Col md={5}>
             <InputGroup>
               <Form.Control placeholder="Tìm mã sản phẩm, tên sản phẩm" />
-              <Button variant="outline-secondary">Tìm</Button>
+              <Button variant="outline-secondary">
+                <FaSearch />
+              </Button>
             </InputGroup>
           </Col>
         </Row>

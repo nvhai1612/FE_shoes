@@ -9,6 +9,7 @@ import VoucherManagement from "./pages/VoucherManagement";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import ForgotPasswordPage from "./components/ForgotPasswordPage";
+import InvoiceDetailPage from "./components/InvoiceDetailPage";
 import {
   BrowserRouter as Router,
   Routes,
@@ -55,6 +56,10 @@ function App() {
               <Routes>
                 <Route path="/banhangtaiquay" element={<PosPage />} />
                 <Route path="/hoadon" element={<PosOrderPage />} />
+                <Route
+                  path="/hoadon/hoadonchitiet"
+                  element={<InvoiceDetailPage />}
+                />
                 <Route path="/sanpham/*" element={<ProductManagement />} />
                 <Route path="/taikhoan/*" element={<AccountManagement />} />
                 <Route path="/giamgia/*" element={<VoucherManagement />} />

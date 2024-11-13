@@ -217,7 +217,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function ChatLieuList() {
   const [chatLieuList, setChatLieuList] = useState([]);
-  const [editChatLieuId, setEditChatLieuId] = useState(null);
+    const [searchName, setSearchName] = useState('');
+    const [editChatLieuId, setEditChatLieuId] = useState(null);
   const [editingChatLieu, setEditingChatLieu] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newChatLieuName, setNewChatLieuName] = useState('');
@@ -234,8 +235,17 @@ function ChatLieuList() {
           toast.error('Không thể tải danh sách chất liệu');
         });
   }, []);
+    const handleSearch = () => {
+        // Gọi API tìm kiếm đế giày theo tên và trạng thái
+        axios.get(`http://localhost:8080/api/chat-lieu/search`, {
+            params: { ten: searchName }
+        })
+            .then(response => setChatLieuList(response.data))
+            .catch(error => toast.error('Lỗi khi tìm kiếm đế giày'));
+    };
 
-  const handleAddChatLieu = () => {
+
+    const handleAddChatLieu = () => {
     setShowAddModal(true);
   };
 
@@ -306,10 +316,16 @@ function ChatLieuList() {
         <div className="filter-section mb-3">
           <Row>
             <Col md={6}>
-              <InputGroup>
-                <Form.Control placeholder="Tìm chất liệu" />
-                <Button variant="outline-secondary">Tìm</Button>
-              </InputGroup>
+                <InputGroup>
+                    <Form.Control
+                        placeholder="Tìm chất liệu"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                    />
+                    <Button variant="outline-secondary" onClick={handleSearch}>
+                        <FaSearch /> Tìm
+                    </Button>
+                </InputGroup>
             </Col>
           </Row>
 

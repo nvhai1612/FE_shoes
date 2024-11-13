@@ -1,15 +1,31 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Table, Form, Button, Container, Row, Col, InputGroup } from 'react-bootstrap';
-import { FaFilter, FaEdit, FaTrash } from 'react-icons/fa';
+import {FaFilter, FaEdit, FaTrash, FaSearch} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {toast} from "react-toastify";
 
 function CustomerPage() {
   const navigate = useNavigate();
+    const [customer, setCustomer] = useState([]);
+    const [searchName, setSearchName] = useState('');
 
   const handleAddCustomer = () => {
     navigate('/taikhoan/khachhang/themkhachhang'); // Đường dẫn đến AddCustomerPage
   };
-
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/khach-hang')
+            .then(response => setCustomer(response.data))
+            .catch(() => toast.error('Không thể tải danh sách khach hang'));
+    }, []);
+    const handleSearch = () => {
+        // Gọi API tìm kiếm đế giày theo tên và trạng thái
+        axios.get(`http://localhost:8080/api/khach-hang/search`, {
+            params: { ten: searchName }
+        })
+            .then(response => setCustomer(response.data))
+            .catch(error => toast.error('Lỗi khi tìm kiếm khach hang'));
+    };
   return (
     <Container>
       <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px' }}>Quản lý khách hàng</h2>
@@ -33,10 +49,16 @@ function CustomerPage() {
       <div className="filter-section mb-3">
         <Row>
           <Col md={6}>
-            <InputGroup>
-              <Form.Control placeholder="Tìm mã nhân viên, tên hoặc SDT" />
-              <Button variant="outline-secondary">Tìm</Button>
-            </InputGroup>
+              <InputGroup>
+                  <Form.Control
+                      placeholder="Tìm mã nhân viên, tên hoặc SDT"
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                  />
+                  <Button variant="outline-secondary" onClick={handleSearch}>
+                      <FaSearch /> Tìm
+                  </Button>
+              </InputGroup>
           </Col>
         </Row>
       </div>
@@ -58,34 +80,36 @@ function CustomerPage() {
       {/* Danh sách khách hàng */}
       <Table striped bordered hover style={{ marginTop: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
         <thead style={{ backgroundColor: '#F8E7CA', textAlign: 'center' }}>
-          <tr>
-            <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Mã hóa đơn</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Mã khách hàng</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Tên khách hàng</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Số điện thoại</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Ngày sinh</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Địa chỉ</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Trạng thái</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
-          </tr>
+        <tr>
+            <th style={{padding: '10px', textAlign: 'center'}}>STT</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Ảnh</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Mã nhân viên</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Tên nhân viên</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Số điện thoại</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Email</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Trạng thái</th>
+            <th style={{padding: '10px', textAlign: 'center'}}>Thao tác</th>
+        </tr>
         </thead>
-        <tbody>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <tr key={index}>
-              <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>VNA26354897</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>2411362</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Nguyễn Văn Nam</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>0982666999</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>22/06/2002</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Hà Nội</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Khách sỉ</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>
-                <Button variant="link"><FaEdit /></Button>
-                <Button variant="link" className="text-danger"><FaTrash /></Button>
-              </td>
-            </tr>
+          <tbody>
+          {customer.map((customer, index) => (
+              <tr key={customer.id}>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>
+                      <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2024/3/19/1317075/Kim-Ji-Won-6.jpg"
+                           alt="Employee" style={{width: '40px', height: '45px', borderRadius: '50%'}}/>
+                  </td>
+
+                  <td style={{padding: '10px', textAlign: 'center'}}>{customer.maKhachHang}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{customer.hoVaTen}</td>
+                  <td style={{padding: '10px', textAlign: 'center' }}>{customer.soDienThoai}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{customer.email}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{customer.trangThai===1?"Đang làm":"Nghi Việc"}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                      <Button variant="link"><FaEdit /></Button>
+                      <Button variant="link" className="text-danger"><FaTrash /></Button>
+                  </td>
+              </tr>
           ))}
         </tbody>
       </Table>

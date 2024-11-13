@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function BrandList() {
   const [brands, setBrands] = useState([]);
+  const [searchName, setSearchName] = useState('');
   const [editBrandId, setEditBrandId] = useState(null);
   const [editingBrand, setEditingBrand] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -18,6 +19,14 @@ function BrandList() {
         .then(response => setBrands(response.data))
         .catch(() => toast.error('Không thể tải danh sách thương hiệu'));
   }, []);
+    const handleSearch = () => {
+        // Gọi API tìm kiếm đế giày theo tên và trạng thái
+        axios.get(`http://localhost:8080/api/thuong-hieu/search`, {
+            params: { ten: searchName }
+        })
+            .then(response => setBrands(response.data))
+            .catch(error => toast.error('Lỗi khi tìm kiếm đế giày'));
+    };
 
   const handleAddBrand = () => setShowAddModal(true);
 
@@ -29,6 +38,7 @@ function BrandList() {
         ngayTao: new Date().toISOString(),
         nguoiTao: userName
       };
+
 
       axios.post('http://localhost:8080/api/thuong-hieu', newBrand)
           .then(response => {
@@ -83,8 +93,14 @@ function BrandList() {
               <Row>
                   <Col md={6}>
                       <InputGroup>
-                          <Form.Control placeholder="Tìm thương hiệu"/>
-                          <Button variant="outline-secondary">Tìm</Button>
+                          <Form.Control
+                              placeholder="Tìm thương hiệu"
+                              value={searchName}
+                              onChange={(e) => setSearchName(e.target.value)}
+                          />
+                          <Button variant="outline-secondary" onClick={handleSearch}>
+                              <FaSearch /> Tìm
+                          </Button>
                       </InputGroup>
                   </Col>
               </Row>
@@ -112,25 +128,37 @@ function BrandList() {
           <tbody>
           {brands.map((brand, index) => (
               <tr key={brand.id}>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{brand.tenThuongHieu}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{new Date(brand.ngayTao).toLocaleDateString()}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{brand.nguoiTao}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{new Date(brand.lanCapNhatCuoi).toLocaleDateString()}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{brand.nguoiCapNhat}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>{brand.trangThai === 1 ? "Đang bán" : "Ngừng bán"}</td>
-                <td style={{ padding: '10px', textAlign: 'center' }}>
-                  <Button variant="link" onClick={() => handleEditBrand(brand.id)}><FaEdit/></Button>
-                  <Button variant="link" className="text-danger" onClick={() => handleDeleteBrand(brand.id)}><FaTrash/></Button>
-                </td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{index + 1}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{brand.tenThuongHieu}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{new Date(brand.ngayTao).toLocaleDateString()}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{brand.nguoiTao}</td>
+                  <td style={{
+                      padding: '10px',
+                      textAlign: 'center'
+                  }}>{new Date(brand.lanCapNhatCuoi).toLocaleDateString()}</td>
+                  <td style={{padding: '10px', textAlign: 'center'}}>{brand.nguoiCapNhat}</td>
+                  <td style={{
+                      padding: '10px',
+                      textAlign: 'center',
+                      color: brand.trangThai === 1 ? 'darkgreen' : 'red'
+                  }}>
+                      {brand.trangThai === 1 ? "Đang bán" : "Ngừng bán"}
+                  </td>
+
+
+                  <td style={{padding: '10px', textAlign: 'center'}}>
+                      <Button variant="link" onClick={() => handleEditBrand(brand.id)}><FaEdit/></Button>
+                      <Button variant="link" className="text-danger"
+                              onClick={() => handleDeleteBrand(brand.id)}><FaTrash/></Button>
+                  </td>
               </tr>
           ))}
           </tbody>
-        </Table>
+          </Table>
 
-        {/* Modal chỉnh sửa thương hiệu */}
-        {editBrandId && (
-            <Modal show={!!editBrandId} onHide={() => setEditBrandId(null)}>
+          {/* Modal chỉnh sửa thương hiệu */}
+          {editBrandId && (
+              <Modal show={!!editBrandId} onHide={() => setEditBrandId(null)}>
               <Modal.Header closeButton>
                 <Modal.Title>Chỉnh sửa thương hiệu</Modal.Title>
               </Modal.Header>

@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function SoleTypeList() {
   const [soleTypes, setSoleTypes] = useState([]);
+  const [searchName, setSearchName] = useState('');
   const [editSoleTypeId, setEditSoleTypeId] = useState(null);
   const [editingSoleType, setEditingSoleType] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -24,6 +25,14 @@ function SoleTypeList() {
           toast.error('Không thể tải danh sách đế giày');
         });
   }, []);
+  const handleSearch = () => {
+        // Gọi API tìm kiếm đế giày theo tên và trạng thái
+        axios.get(`http://localhost:8080/api/de-giay/search`, {
+            params: { ten: searchName }
+        })
+            .then(response => setSoleTypes(response.data))
+            .catch(error => toast.error('Lỗi khi tìm kiếm đế giày'));
+    };
 
   const handleAddSoleType = () => {
     setShowAddModal(true);
@@ -113,10 +122,16 @@ function SoleTypeList() {
         <div className="filter-section mb-3">
           <Row>
             <Col md={6}>
-              <InputGroup>
-                <Form.Control placeholder="Tìm đế giày" />
-                <Button variant="outline-secondary">Tìm</Button>
-              </InputGroup>
+                <InputGroup>
+                    <Form.Control
+                        placeholder="Tìm đế giày"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                    />
+                    <Button variant="outline-secondary" onClick={handleSearch}>
+                        <FaSearch /> Tìm
+                    </Button>
+                </InputGroup>
             </Col>
           </Row>
 

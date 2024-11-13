@@ -1,13 +1,31 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Table, Form, Button, Container, Row, Col, InputGroup } from 'react-bootstrap';
-import { FaFilter, FaEdit, FaTrash } from 'react-icons/fa';
+import {FaFilter, FaEdit, FaTrash, FaSearch} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {toast} from "react-toastify";
 
 function EmployeePage() {
   const navigate = useNavigate();
+  const [employee, setEmployee] = useState([]);
+  const [searchName, setSearchName] = useState('');
 
   const handleAddEmployee = () => {
     navigate('/taikhoan/nhanvien/themnhanvien');
+  };
+
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/nhan-vien')
+        .then(response => setEmployee(response.data))
+        .catch(() => toast.error('Không thể tải danh sách nhân viên'));
+  }, []);
+  const handleSearch = () => {
+    // Gọi API tìm kiếm đế giày theo tên và trạng thái
+    axios.get(`http://localhost:8080/api/nhan-vien/search`, {
+      params: { ten: searchName }
+    })
+        .then(response => setEmployee(response.data))
+        .catch(error => toast.error('Lỗi khi tìm kiếm nhân viên'));
   };
 
   return (
@@ -32,8 +50,14 @@ function EmployeePage() {
         <Row>
           <Col md={6}>
             <InputGroup>
-              <Form.Control placeholder="Tìm mã nhân viên, tên hoặc số điện thoại" />
-              <Button variant="outline-secondary">Tìm</Button>
+              <Form.Control
+                  placeholder="Tìm mã nhân viên, tên hoặc số điện thoại"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+              />
+              <Button variant="outline-secondary" onClick={handleSearch}>
+                <FaSearch /> Tìm
+              </Button>
             </InputGroup>
           </Col>
         </Row>
@@ -56,13 +80,13 @@ function EmployeePage() {
               <option>Nhân viên</option>
             </Form.Select>
           </Col>
-          <Col md={3}>
-            <Form.Select>
-              <option>Tất cả giới tính</option>
-              <option>Nam</option>
-              <option>Nữ</option>
-            </Form.Select>
-          </Col>
+          {/*<Col md={3}>*/}
+          {/*  <Form.Select>*/}
+          {/*    <option>Tất cả giới tính</option>*/}
+          {/*    <option>Nam</option>*/}
+          {/*    <option>Nữ</option>*/}
+          {/*  </Form.Select>*/}
+          {/*</Col>*/}
           <Col md="auto">
             <Button variant="secondary">Làm mới</Button>
           </Col>
@@ -74,27 +98,31 @@ function EmployeePage() {
         <thead style={{ backgroundColor: '#F8E7CA', textAlign: 'center' }}>
           <tr>
             <th style={{ padding: '10px', textAlign: 'center' }}>STT</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Ảnh</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Mã nhân viên</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Tên nhân viên</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Số điện thoại</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Ngày sinh</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Giới tính</th>
-            <th style={{ padding: '10px', textAlign: 'center' }}>Chức vụ</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Email</th>
+            <th style={{ padding: '10px', textAlign: 'center' }}>Vai trò</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Trạng thái</th>
             <th style={{ padding: '10px', textAlign: 'center' }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
-          {Array.from({ length: 10 }).map((_, index) => (
-            <tr key={index}>
+        {employee.map((employee, index) => (
+            <tr key={employee.id}>
               <td style={{ padding: '10px', textAlign: 'center' }}>{index + 1}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>NV{1 + index}</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Nguyễn Văn Hải</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>0982666999</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>16/12/2003</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Nam</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Quản lý</td>
-              <td style={{ padding: '10px', textAlign: 'center' }}>Đang làm</td>
+              <td style={{padding: '10px', textAlign: 'center'}}>
+                <img src="https://media-cdn-v2.laodong.vn/storage/newsportal/2024/3/19/1317075/Kim-Ji-Won-6.jpg"
+                     alt="Employee" style={{width: '40px', height: '45px', borderRadius: '50%'}}/>
+              </td>
+
+              <td style={{padding: '10px', textAlign: 'center'}}>{employee.maNhanVien}</td>
+              <td style={{padding: '10px', textAlign: 'center'}}>{employee.hoVaTen}</td>
+              <td style={{padding: '10px', textAlign: 'center' }}>{employee.soDienThoai}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{employee.email}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{employee.vaiTro===1?"Nhân Viên":"Quản Lý"}</td>
+              <td style={{ padding: '10px', textAlign: 'center' }}>{employee.trangThai===1?"Đang làm":"Nghi Việc"}</td>
               <td style={{ padding: '10px', textAlign: 'center' }}>
                 <Button variant="link"><FaEdit /></Button>
                 <Button variant="link" className="text-danger"><FaTrash /></Button>

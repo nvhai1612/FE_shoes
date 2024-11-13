@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Form, Button, Container, Modal, Row, Col, InputGroup } from 'react-bootstrap';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import {FaEdit, FaSearch, FaTrash} from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 
 function KichCoList() {
   const [kichCos, setKichCos] = useState([]);
+  const [searchName, setSearchName] = useState('');
   const [editKichCoId, setEditKichCoId] = useState(null);
   const [editingKichCo, setEditingKichCo] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -18,6 +19,14 @@ function KichCoList() {
         .then(response => setKichCos(response.data))
         .catch(error => toast.error('Không thể tải danh sách kích cỡ'));
   }, []);
+    const handleSearch = () => {
+        // Gọi API tìm kiếm đế giày theo tên và trạng thái
+        axios.get(`http://localhost:8080/api/kich-co/search`, {
+            params: { ten: searchName }
+        })
+            .then(response => setKichCos(response.data))
+            .catch(error => toast.error('Lỗi khi tìm kiếm đế giày'));
+    };
 
   const handleAddKichCo = () => setShowAddModal(true);
 
@@ -79,10 +88,16 @@ function KichCoList() {
         <div className="filter-section mb-3">
           <Row>
             <Col md={6}>
-              <InputGroup>
-                <Form.Control placeholder="Tìm kích cỡ" />
-                <Button variant="outline-secondary">Tìm</Button>
-              </InputGroup>
+                <InputGroup>
+                    <Form.Control
+                        placeholder="Tìm kiêm kích cỡ"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value)}
+                    />
+                    <Button variant="outline-secondary" onClick={handleSearch}>
+                        <FaSearch /> Tìm
+                    </Button>
+                </InputGroup>
             </Col>
           </Row>
 

@@ -8,7 +8,7 @@ import {
   Col,
   InputGroup,
 } from "react-bootstrap";
-import { FaSearch, FaFilter, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaFilter, FaEye, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function EmployeePage() {
@@ -16,6 +16,14 @@ function EmployeePage() {
 
   const handleAddEmployee = () => {
     navigate("/taikhoan/nhanvien/themnhanvien");
+  };
+
+  const handleViewEmployee = (employeeId) => {
+    navigate(`/taikhoan/nhanvien/thongtinnhanvien/${employeeId}`);
+  };
+
+  const handleRefresh = () => {
+    console.log("Làm mới danh sách nhân viên");
   };
 
   return (
@@ -60,43 +68,66 @@ function EmployeePage() {
         </Row>
       </div>
 
-      <div className="mb-3">
-        <h6
-          style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "5px" }}
+      <div className="d-flex mb-3">
+        <Form.Group
+          controlId="positionFilter"
+          style={{ marginRight: "10px", width: "20%" }}
         >
-          Trạng thái nhân viên
-        </h6>
-        <Row className="d-flex justify-content-between align-items-center">
-          <Col md={3}>
-            <Form.Select>
-              <option>Tất cả</option>
-              <option>Đang làm việc</option>
-              <option>Đã nghỉ việc</option>
-            </Form.Select>
-          </Col>
-          <Col md={3}>
-            <Form.Select>
-              <option>Tất cả chức vụ</option>
-              <option>Quản lý</option>
-              <option>Nhân viên</option>
-            </Form.Select>
-          </Col>
-          <Col md={3}>
-            <Form.Select>
-              <option>Tất cả giới tính</option>
-              <option>Nam</option>
-              <option>Nữ</option>
-            </Form.Select>
-          </Col>
-          <Col md="auto">
-            <Button variant="secondary">Làm mới</Button>
-          </Col>
-        </Row>
+          <Form.Label style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Chức vụ
+          </Form.Label>
+          <Form.Select>
+            <option>Tất cả</option>
+            <option>Quản lý</option>
+            <option>Nhân viên</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group
+          controlId="genderFilter"
+          style={{ marginRight: "10px", width: "20%" }}
+        >
+          <Form.Label style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Giới tính
+          </Form.Label>
+          <Form.Select>
+            <option>Tất cả</option>
+            <option>Nam</option>
+            <option>Nữ</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group
+          controlId="statusFilter"
+          style={{ marginRight: "10px", width: "20%" }}
+        >
+          <Form.Label style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Trạng thái
+          </Form.Label>
+          <Form.Select>
+            <option>Tất cả</option>
+            <option>Đang làm</option>
+            <option>Đã nghỉ</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Button
+          variant="outline-primary"
+          onClick={handleRefresh}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+            height: "fit-content",
+            marginTop: "auto",
+          }}
+        >
+          <FaSync style={{ marginRight: "5px" }} /> Làm mới
+        </Button>
       </div>
       <hr />
 
       <Table
-        striped
         bordered
         hover
         style={{ marginTop: "20px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
@@ -122,7 +153,7 @@ function EmployeePage() {
         </thead>
         <tbody>
           {Array.from({ length: 10 }).map((_, index) => (
-            <tr key={index}>
+            <tr key={index} style={{ backgroundColor: "#FFFFFF" }}>
               <td style={{ padding: "10px", textAlign: "center" }}>
                 {index + 1}
               </td>
@@ -142,11 +173,11 @@ function EmployeePage() {
               <td style={{ padding: "10px", textAlign: "center" }}>Quản lý</td>
               <td style={{ padding: "10px", textAlign: "center" }}>Đang làm</td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                <Button variant="link">
-                  <FaEdit />
-                </Button>
-                <Button variant="link" className="text-danger">
-                  <FaTrash />
+                <Button
+                  variant="link"
+                  onClick={() => handleViewEmployee(index + 1)}
+                >
+                  <FaEye />
                 </Button>
               </td>
             </tr>

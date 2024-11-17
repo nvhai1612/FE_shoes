@@ -45,7 +45,6 @@ function AddEmployeePage({ onBack }) {
                 margin: "43px auto",
                 fontSize: "14px",
                 color: "#999",
-                marginBottom: "56px",
                 backgroundImage: selectedImage
                   ? `url(${selectedImage})`
                   : "none",
@@ -80,6 +79,16 @@ function AddEmployeePage({ onBack }) {
               <Form.Label>Số Điện Thoại</Form.Label>
               <Form.Control type="text" placeholder="Nhập số điện thoại" />
             </Form.Group>
+          </Col>
+
+          {/* Cột phải - Thông tin chi tiết */}
+          <Col md={6}>
+            <h5 style={{ fontWeight: "bold" }}>Thông tin chi tiết</h5>
+
+            <Form.Group controlId="employeeID" style={{ marginBottom: "10px" }}>
+              <Form.Label>Số CCCD</Form.Label>
+              <Form.Control type="text" placeholder="Nhập số CCCD" />
+            </Form.Group>
 
             <Form.Group
               controlId="employeeGender"
@@ -103,19 +112,7 @@ function AddEmployeePage({ onBack }) {
                 />
               </div>
             </Form.Group>
-          </Col>
 
-          {/* Cột phải - Thông tin chi tiết */}
-          <Col md={6}>
-            <h5 style={{ fontWeight: "bold" }}>Thông tin chi tiết</h5>
-
-            {/* Số CCCD */}
-            <Form.Group controlId="employeeID" style={{ marginBottom: "10px" }}>
-              <Form.Label>Số CCCD</Form.Label>
-              <Form.Control type="text" placeholder="Nhập số CCCD" />
-            </Form.Group>
-
-            {/* Ngày sinh */}
             <Form.Group
               controlId="employeeDOB"
               style={{ marginBottom: "10px" }}
@@ -124,7 +121,6 @@ function AddEmployeePage({ onBack }) {
               <Form.Control type="date" />
             </Form.Group>
 
-            {/* Email */}
             <Form.Group
               controlId="employeeEmail"
               style={{ marginBottom: "10px" }}
@@ -132,36 +128,12 @@ function AddEmployeePage({ onBack }) {
               <Form.Label>Email</Form.Label>
               <Form.Control type="email" placeholder="Nhập email" />
             </Form.Group>
-
-            {/* Quê quán */}
             <Form.Group
               controlId="employeeAddress"
               style={{ marginBottom: "10px" }}
             >
               <Form.Label>Quê quán</Form.Label>
               <Form.Control type="text" placeholder="Nhập quê quán" />
-            </Form.Group>
-
-            {/* Mật khẩu */}
-            <Form.Group
-              controlId="employeePassword"
-              style={{ marginBottom: "10px" }}
-            >
-              <Form.Label>Mật khẩu</Form.Label>
-              <Form.Control type="password" placeholder="Nhập mật khẩu" />
-            </Form.Group>
-
-            {/* Vai trò */}
-            <Form.Group
-              controlId="employeeRole"
-              style={{ marginBottom: "10px" }}
-            >
-              <Form.Label>Vai trò</Form.Label>
-              <Form.Select>
-                <option>Chọn vai trò</option>
-                <option value="admin">Quản trị viên</option>
-                <option value="staff">Nhân viên</option>
-              </Form.Select>
             </Form.Group>
           </Col>
         </Row>

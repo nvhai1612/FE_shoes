@@ -8,7 +8,7 @@ import {
   Col,
   InputGroup,
 } from "react-bootstrap";
-import { FaSearch, FaFilter, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaFilter, FaEye, FaSync } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function CustomerPage() {
@@ -16,6 +16,14 @@ function CustomerPage() {
 
   const handleAddCustomer = () => {
     navigate("/taikhoan/khachhang/themkhachhang"); // Đường dẫn đến AddCustomerPage
+  };
+
+  const handleViewCustomer = (customerId) => {
+    navigate(`/taikhoan/khachhang/thongtinkhachhang/${customerId}`); // Đường dẫn đến CustomerInfo
+  };
+
+  const handleRefresh = () => {
+    console.log("Làm mới danh sách khách hàng");
   };
 
   return (
@@ -26,7 +34,6 @@ function CustomerPage() {
         Quản lý khách hàng
       </h2>
 
-      {/* Bộ lọc và Tạo mới */}
       <div
         style={{
           display: "flex",
@@ -48,7 +55,6 @@ function CustomerPage() {
       </div>
       <hr />
 
-      {/* Phần tìm kiếm và bộ lọc khách hàng */}
       <div className="filter-section mb-3">
         <Row>
           <Col md={5}>
@@ -62,27 +68,51 @@ function CustomerPage() {
         </Row>
       </div>
 
-      {/* Tiêu đề và bộ lọc trạng thái khách hàng */}
-      <div className="mb-3">
-        <h6
-          style={{ fontSize: "16px", fontWeight: "bold", marginBottom: "5px" }}
+      <div className="d-flex mb-3">
+        <Form.Group
+          controlId="genderFilter"
+          style={{ marginRight: "10px", width: "20%" }}
         >
-          Trạng thái khách hàng
-        </h6>
-        <div className="d-flex justify-content-between align-items-center">
-          <Form.Select style={{ maxWidth: "200px" }}>
+          <Form.Label style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Giới tính
+          </Form.Label>
+          <Form.Select>
             <option>Tất cả</option>
-            <option>Khách sỉ</option>
-            <option>Khách lẻ</option>
+            <option>Nam</option>
+            <option>Nữ</option>
           </Form.Select>
-          <Button variant="secondary">Làm mới</Button>
-        </div>
+        </Form.Group>
+        <Form.Group
+          controlId="statusFilter"
+          style={{ marginRight: "10px", width: "20%" }}
+        >
+          <Form.Label style={{ fontSize: "16px", fontWeight: "bold" }}>
+            Trạng thái
+          </Form.Label>
+          <Form.Select>
+            <option>Tất cả</option>
+            <option>Hoạt động</option>
+            <option>Dừng Hoạt động</option>
+          </Form.Select>
+        </Form.Group>
+
+        <Button
+          variant="outline-primary"
+          onClick={handleRefresh}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+            height: "fit-content",
+            marginTop: "auto",
+          }}
+        >
+          <FaSync style={{ marginRight: "5px" }} /> Làm mới
+        </Button>
       </div>
       <hr />
 
-      {/* Danh sách khách hàng */}
       <Table
-        striped
         bordered
         hover
         style={{ marginTop: "20px", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}
@@ -90,7 +120,6 @@ function CustomerPage() {
         <thead style={{ backgroundColor: "#F8E7CA", textAlign: "center" }}>
           <tr>
             <th style={{ padding: "10px", textAlign: "center" }}>STT</th>
-            <th style={{ padding: "10px", textAlign: "center" }}>Mã hóa đơn</th>
             <th style={{ padding: "10px", textAlign: "center" }}>
               Mã khách hàng
             </th>
@@ -100,39 +129,42 @@ function CustomerPage() {
             <th style={{ padding: "10px", textAlign: "center" }}>
               Số điện thoại
             </th>
+            <th style={{ padding: "10px", textAlign: "center" }}>Email</th>
             <th style={{ padding: "10px", textAlign: "center" }}>Ngày sinh</th>
-            <th style={{ padding: "10px", textAlign: "center" }}>Địa chỉ</th>
             <th style={{ padding: "10px", textAlign: "center" }}>Trạng thái</th>
             <th style={{ padding: "10px", textAlign: "center" }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
           {Array.from({ length: 10 }).map((_, index) => (
-            <tr key={index}>
+            <tr key={index} style={{ backgroundColor: "#FFFFFF" }}>
               <td style={{ padding: "10px", textAlign: "center" }}>
                 {index + 1}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                VNA26354897
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>2411362</td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                Nguyễn Văn Nam
+                KH{index + 1001}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                0982666999
+                Nguyễn Văn {index % 2 === 0 ? "A" : "B"}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                0988{index + 100000}
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                nguyenvan{index}@gmail.com
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
                 22/06/2002
               </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>Hà Nội</td>
-              <td style={{ padding: "10px", textAlign: "center" }}>Khách sỉ</td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                <Button variant="link">
-                  <FaEdit />
-                </Button>
-                <Button variant="link" className="text-danger">
-                  <FaTrash />
+                Hoạt động
+              </td>
+              <td style={{ padding: "10px", textAlign: "center" }}>
+                <Button
+                  variant="link"
+                  onClick={() => handleViewCustomer(index + 1001)}
+                >
+                  <FaEye />
                 </Button>
               </td>
             </tr>

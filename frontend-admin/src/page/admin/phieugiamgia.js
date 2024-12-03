@@ -37,6 +37,16 @@ const AdminPhieuGiamGia = ()=>{
         }
     }
 
+    function trangThai(tt) {
+        console.log(tt);
+        
+        switch (tt) {
+        case 1: return 'Đang hoạt đông'
+        case 2: return 'Hết phiếu giảm giá'
+        case 3: return 'Đã hết hạn'
+        }
+    }
+
 
     return (
         <>
@@ -65,6 +75,7 @@ const AdminPhieuGiamGia = ()=>{
                                 <th>Số lượng</th>
                                 <th>Loại phiếu</th>
                                 <th>Thời gian</th>
+                                <th>Trạng thái</th>
                                 <th class="sticky-col">Hành động</th>
                             </tr>
                         </thead>
@@ -80,6 +91,7 @@ const AdminPhieuGiamGia = ()=>{
                                     <td>{item.soLuong}</td>
                                     <td>{item.loaiPhieu == true?'Giảm tiền':'giảm %'}</td>
                                     <td>{item.ngayBatDau} - {item.ngayKetThuc}</td>
+                                    <td>{trangThai(item.trangThai)}</td>
                                     <td class="sticky-col">
                                         <a href={'add-khuyen-mai?id='+item.id} class="edit-btn"><i className='fa fa-edit'></i></a>
                                         <button onClick={()=>deletePhieuGiamGia(item.id)} class="delete-btn"><i className='fa fa-trash'></i></button>

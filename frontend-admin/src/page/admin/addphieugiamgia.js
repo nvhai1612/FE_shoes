@@ -69,6 +69,22 @@ const AdminAddPhieuGiamGia = ()=>{
         }
     };
 
+    function change_pgg(e) {
+        console.log(e.target.value);
+        let select_value = e.target.value;
+        let element_slect = document.getElementById('gia_tri_giam')
+        if (select_value === 'true'){
+            console.log('b');
+            
+            element_slect.style.display = 'none';
+        }else{
+            console.log("a");
+            
+            element_slect.style.display = 'block';
+        }
+
+    }
+
     return (
         <div>
             <div class="col-sm-12 header-sps">
@@ -86,7 +102,7 @@ const AdminAddPhieuGiamGia = ()=>{
                         <input name='tenPhieu' defaultValue={item?.tenPhieu} class="form-control"/>
 
                         <label class="lb-form">Loại phiếu</label>
-                        <select defaultValue={item?.gioiTinh} name='loaiphieu' class="form-control">
+                        <select onChange={(e) => change_pgg(e)} defaultValue={item?.gioiTinh} name='loaiphieu' class="form-control">
                             <option selected={item?.loaiPhieu == true} value={true}>Giảm tiền</option>
                             <option selected={item?.loaiPhieu == false} value={false}>Giảm %</option>
                         </select>
@@ -94,8 +110,9 @@ const AdminAddPhieuGiamGia = ()=>{
                         <label class="lb-form">Giá trị giảm tối đa</label>
                         <input name='giaTriGiamToiDa' defaultValue={item?.giaTriGiamToiDa} class="form-control"/>
 
-                        <label class="lb-form">Giá trị giảm</label>
+                        <div id='gia_tri_giam'><label class="lb-form">Giá trị giảm</label>
                         <input name='giaTriGiam' defaultValue={item?.giaTriGiam} class="form-control"/>
+                        </div>
 
                         <label class="lb-form">Đơn tối thiểu</label>
                         <input name='donToiThieu' defaultValue={item?.donToiThieu} class="form-control"/>

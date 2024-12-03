@@ -1,84 +1,51 @@
-import React, { useState } from "react";
-import Sidebar from "./components/Sidebar";
-import AppNavbar from "./components/AppNavbar";
-import PosPage from "./pages/PosPage";
-import PosOrderPage from "./pages/PosOrderPage";
-import ProductManagement from "./pages/ProductManagement";
-import AccountManagement from "./pages/AccountManagement";
-import VoucherManagement from "./pages/VoucherManagement";
-import LoginPage from "./components/LoginPage";
-import RegisterPage from "./components/RegisterPage";
-import ForgotPasswordPage from "./components/ForgotPasswordPage";
-import InvoiceDetailPage from "./components/InvoiceDetailPage";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { ToastContainer, toast } from 'react-toastify';
+import {Routes, Route,BrowserRouter as Router} from 'react-router-dom'
+import { publicRoutes, adminRoutes, nhanvienRoutes } from './router/index';
+import AdminLayout from './layout/admin/Layout'
+import NhanVienLayout from './layout/nhanvien/Layout'
 
 function App() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Đặt mặc định là true để Sidebar mở
-  const navigate = useNavigate();
-
-  const isLoggedIn = localStorage.getItem("isLoggedIn");
-
-  // Hàm thu gọn/mở rộng sidebar
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
-  const handleNavigate = (page) => {
-    navigate(page.replace("/"));
-  };
-
-  return (
-    <div className="d-flex">
-      {/* Nếu chưa đăng nhập và đang ở các trang không phải đăng nhập, đăng ký hoặc quên mật khẩu thì sẽ điều hướng về đăng nhập */}
-      {!isLoggedIn ? (
-        <Routes>
-          <Route path="/dangnhap" element={<LoginPage />} />
-          <Route path="/dangky" element={<RegisterPage />} />
-          <Route path="/quenmatkhau" element={<ForgotPasswordPage />} />
-          <Route path="*" element={<Navigate to="/dangnhap" replace />} />{" "}
-          {/* Chuyển hướng mọi route khác về trang đăng nhập */}
-        </Routes>
-      ) : (
-        <>
-          <Sidebar isOpen={isSidebarOpen} onNavigate={handleNavigate} />
-
-          <div style={{ flex: 1 }}>
-            <AppNavbar onToggleSidebar={toggleSidebar} />
-
-            <div className="p-4">
-              <Routes>
-                <Route path="/banhangtaiquay" element={<PosPage />} />
-                <Route path="/hoadon" element={<PosOrderPage />} />
-                <Route
-                  path="/hoadon/hoadonchitiet"
-                  element={<InvoiceDetailPage />}
-                />
-                <Route path="/sanpham/*" element={<ProductManagement />} />
-                <Route path="/taikhoan/*" element={<AccountManagement />} />
-                <Route path="/giamgia/*" element={<VoucherManagement />} />
-              </Routes>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-export default function AppWrapper() {
+  // let checkAdmin = window.location.pathname.startsWith("/admin")
+  // let checkEmployee = window.location.pathname.startsWith("/employee")
   return (
     <Router>
-      <Routes>
-        <Route path="/dangnhap" element={<LoginPage />} />
-        <Route path="/*" element={<App />} />
-      </Routes>
+      <div className="App">
+          <Routes>
+            {publicRoutes.map((route, index) => {
+              const Page = route.component
+              return <Route key={index} path={route.path} element={
+                  <Page/>
+              }/>
+            })}
+
+
+            {adminRoutes.map((route, index) => {
+              const Layout = route.layout || AdminLayout
+              const Page = route.component
+              return <Route key={index} path={route.path} element={
+                <Layout>
+                  <Page/>
+                </Layout>
+              }/>
+            })}
+
+            {nhanvienRoutes.map((route, index) => {
+              const Layout = route.layout || NhanVienLayout
+              const Page = route.component
+              return <Route key={index} path={route.path} element={
+                <Layout>
+                  <Page/>
+                </Layout>
+              }/>
+            })}
+
+          </Routes>
+      </div>
+      <ToastContainer/>
     </Router>
-  );
+
+);
+
 }
+
+export default App;

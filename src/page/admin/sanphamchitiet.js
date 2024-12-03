@@ -138,6 +138,12 @@ const AdminSanPhamChiTiet = ()=>{
             toast.error(result.message);
         }
     }
+    function trangThai(tt) {
+        switch (tt) {
+        case 1: return 'Còn hàng'
+        case 2: return 'Hết hàng'
+        }
+    }
 
 
     return (
@@ -169,6 +175,7 @@ const AdminSanPhamChiTiet = ()=>{
                                 <th>Ngày tạo</th>
                                 <th>Người tạo</th>
                                 <th>Người cập nhật</th>
+                                <th>Trạng thái</th>
                                 <th class="sticky-col">Hành động</th>
                             </tr>
                         </thead>
@@ -186,6 +193,7 @@ const AdminSanPhamChiTiet = ()=>{
                                     <td>{item.ngayTao}</td>
                                     <td>{item.nguoiTao}</td>
                                     <td>{item.nguoiCapNhat}</td>
+                                    <td>{trangThai(item.trangThai)}</td>
                                     <td class="sticky-col">
                                         <button onClick={()=>setItemSelect(item)} data-bs-toggle="modal" data-bs-target="#addcate" class="edit-btn"><i className='fa fa-edit'></i></button>
                                         <button onClick={()=>deleteChiTiet(item.id)} class="delete-btn"><i className='fa fa-trash'></i></button>

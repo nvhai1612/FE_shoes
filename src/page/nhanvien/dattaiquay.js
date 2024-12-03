@@ -18,6 +18,9 @@ const AdminDatTaiQuay = ()=>{
     const [chiTietSanPham, setChiTietSanPham] = useState([]);
     const [selectHoaDonCho, setSelectHoaDonCho] = useState(null);
     const [selectKhachHang, setselectKhachHang] = useState({id:-1,hoVaTen:'Khách lẻ',soDienThoai:''});
+    const [selectDotGiamGia, setSelecDotGiamGia] = useState({});
+    const [dotGiamGia, setdotGiamGia] = useState({});
+
 
     const [thuongHieu, setThuongHieu] = useState([]);
     const [deGiay, setDeGiay] = useState([]);
@@ -31,8 +34,9 @@ const AdminDatTaiQuay = ()=>{
     const [selectkichThuoc, setselectkichThuoc] = useState(null);
     const [selectmauSac, setselectmauSac] = useState(null);
     const [tongTien, setTongTien] = useState(0);
+    const [tongTienNew, setTongTienNew] = useState(0);
 
-    useEffect(()=>{
+     useEffect(()=>{
         getHoaDonCho();
         getKhachHang();
         getSelect();
@@ -55,7 +59,7 @@ const AdminDatTaiQuay = ()=>{
     async function getHoaDonCho() {
         var response = await getMethod("/api/v1/hoa-don/hoa-don-cho");
         var list = await response.json();
-        sethoaDonCho(list)
+        sethoaDonCho(list) 
         if(list.length > 0){
             loadChiTietHdCho(list[0])
         }
@@ -80,20 +84,50 @@ const AdminDatTaiQuay = ()=>{
         }
     }
 
+    async function loadDotGiamGia(hoadoncho){
+        var response = await getMethod("/api/phieu-giam-gia");
+        var result = await response.json()
+        var response = await getMethod("/api/v1/hoa-don/hoa-don-cho");
+        var list = await response.json();
+        
+        setdotGiamGia(result.filter(x => x.trangThai === 1));  
+        if (selectHoaDonCho == null) {
+        if (list.length > 0) {
+            if (list[0].phieuGiamGia != null) {
+                setSelecDotGiamGia(list[0].phieuGiamGia)
+            }else
+            setSelecDotGiamGia(result[0])
+        }
+        
+    }
+    if(hoadoncho != null) {
+        if (hoadoncho != null) {
+        if (hoadoncho.phieuGiamGia != null) {
+            setSelecDotGiamGia(hoadoncho.phieuGiamGia)
+        }else setSelecDotGiamGia(result[0])
+    }
+}
+    }
+
     async function loadChiTietHdCho(item){
         var response = await getMethod("/api/v1/hoa-don/find-by-id?id="+item.id);
-        var result = await response.json()
-        setSelectHoaDonCho(result);
+        var result = await response.json()        
+        setSelectHoaDonCho(result);                
         if(result.khachHang != null) setselectKhachHang(result.khachHang)
             else setselectKhachHang({id:-1,hoVaTen:'Khách lẻ',soDienThoai:''})
         var tong = 0;
         for(var i=0; i< result.hoaDonChiTiets.length; i++){
             tong = Number(tong) + Number(result.hoaDonChiTiets[i].soLuong * result.hoaDonChiTiets[i].giaSanPham)
         }
+        loadDotGiamGia(result)
+        setTongTienNew(tong)
         setTongTien(tong)
     }
 
     async function getKhachHang() {
+        loadDotGiamGia()
+        console.log(selectDotGiamGia);
+        
         var response = await getMethod("/api/khachhang");
         var list = await response.json();
         var arr = [{id:-1,hoVaTen:'Khách lẻ',soDienThoai:''}]
@@ -130,6 +164,9 @@ const AdminDatTaiQuay = ()=>{
         if(con == false){
             return;
         }
+        // if(selectHoaDonCho?.hoaDonChiTiets.length != 0){
+        //     check = selectHoaDonCho.hoaDonChiTiets.filter(x => x.id == event.target.elements.chitietsp.value)
+        // }
         event.preventDefault();
         var soluong = event.target.elements.soluong.value
         var chitietsp = event.target.elements.chitietsp.value
@@ -145,7 +182,7 @@ const AdminDatTaiQuay = ()=>{
     };
 
     async function deleteChiTiet(id){
-        var con = window.confirm("Confirm?");
+        var con = window.confirm("Anh bạn có muốn xóa sản phẩm này không?");
         if (con == false) {
             return;
         }
@@ -182,7 +219,26 @@ const AdminDatTaiQuay = ()=>{
         if (con == false) {
             return;
         }
+        console.log(selectDotGiamGia);
+        
         const response = await postMethod('/api/v1/hoa-don/xac-nhan-dat-tai-quay?idHoaDon=' + selectHoaDonCho.id)
+        const response2 = await postMethod('/api/v1/hoa-don/cap-nhat-phieu-giam-gia?idPGG=' + selectDotGiamGia.id + '&idHoaDon=' + selectHoaDonCho.id)
+        if (response2.status < 300) {
+            Swal.fire({
+                title: "Thông báo",
+                text: "Thành công!",
+                preConfirm: () => {
+                    window.location.reload();
+                }
+            });
+        }
+        if (response2.status == 417) {
+            toast.error("Phiếu giảm giá đã hết hiệu lực vui lòng chọn phiếu giảm giá khác")
+            return
+            // var result = await response.json()
+            // toast.warning(result.defaultMessage);
+        }
+
         if (response.status < 300) {
             Swal.fire({
                 title: "Thông báo",
@@ -198,6 +254,83 @@ const AdminDatTaiQuay = ()=>{
         }
     }
 
+    async function change_value(quality, hdct) {
+        const response = await postMethod('/api/hoa-don-chi-tiet/updateSoLuong?id=' +  hdct + '&soLuong=' + quality)
+        if (response.status < 300) {
+            Swal.fire({
+                title: "Thông báo",
+                text: "Thành công!",
+                preConfirm: () => {
+                    window.location.reload();
+                }
+            });
+        }
+        if (response.status == 417) {
+            var result = await response.json()
+            toast.warning(result.defaultMessage);
+        }
+    }
+
+    async function change_value_enter(quality, hdct, sl_old) {        
+        const response = await postMethod('/api/hoa-don-chi-tiet/updateSoLuongEnter?id=' +  hdct + '&soLuong=' + quality + '&slold=' + sl_old)
+        if (response.status < 300) {
+            Swal.fire({
+                title: "Thông báo",
+                text: "Thành công!",
+                preConfirm: () => {
+                    window.location.reload();
+                }
+            });
+        }
+        if (response.status == 417) {
+            var result = await response.json()
+            toast.warning(result.defaultMessage);
+        }
+    }
+
+    function handleIncrease(quality, hdct){
+        let quality_sp = document.getElementById('quality').value        
+        
+        if ((Number(quality_sp) + Number(quality)) === 0){
+            deleteChiTiet(hdct)
+            return
+        }
+        change_value(quality, hdct)
+    }
+
+
+    function handleDecrease(quality, hdct, sl){
+        let quality_sp = document.getElementById('quality').value
+        if (quality_sp > sl) {
+            toast.warning('so luong khong du')
+            return
+        }
+        change_value(quality, hdct)
+    }
+
+    function change_dotGiamGia(e) {
+        setTongTien(tongTienNew)
+        setSelecDotGiamGia(e)
+    }
+
+    async function capNhapPhieuGiamGia() {
+        if (selectHoaDonCho !== null) {
+           let pgg = selectDotGiamGia
+            if (tongTien >= pgg.donToiThieu){
+                if (pgg.loaiPhieu){                     
+                    setTongTien(tongTien - Number(pgg.giaTriGiamToiDa))
+                }else {
+                let tong_tien_toi_da = tongTien * (pgg.giaTriGiam / 100)
+                let tong_tien = tong_tien_toi_da > pgg.giaTriGiamToiDa ? tongTien - pgg.giaTriGiamToiDa : tongTien - tong_tien_toi_da                  
+                setTongTien(tong_tien)
+                }
+            }
+            const response2 = await postMethod('/api/v1/hoa-don/cap-nhat-phieu-giam-gia-hd?idPGG=' + selectDotGiamGia.id + '&idHoaDon=' + selectHoaDonCho.id)
+    }
+    else{
+        toast.error('Vui lòng chọn hóa đơn để cập nhật phiếu giảm giá')
+    }
+    }
 
     return (
     <div style={{marginBottom:'150px'}}>
@@ -276,9 +409,15 @@ const AdminDatTaiQuay = ()=>{
                                 <br/>Đế giày: {item.sanPhamChiTiet.sanPham.deGiay.tenDeGiay}
                                 <br/>Thương hiệu: {item.sanPhamChiTiet.sanPham.thuongHieu.tenThuongHieu}
                                 <br/>Kích thước: {item.sanPhamChiTiet.kichCo.tenKichCo}
-                                <br/>Màu sắc: {item.sanPhamChiTiet.mauSac.tenMauSac}  <span class="square" style={{background:item.sanPhamChiTiet.mauSac.maMauSac}}></span>
+                                <br/>Màu sắc: {item.sanPhamChiTiet.mauSac.tenMauSac}
+                                <br/>Số lượng: {item.sanPhamChiTiet.soLuong}
+                                  <span class="square" style={{background:item.sanPhamChiTiet.mauSac.maMauSac}}></span>
                             </td>
-                            <td><input defaultValue={item.soLuong} className='inputtaiquay' type='number'/></td>
+                            <td>
+                            <button onClick={e => handleIncrease(-1, item.id)}>-</button>
+                                <input onChange={e => change_value_enter(e.target.value, item.id, item.soLuong)}
+                                defaultValue={item.soLuong} id="quality" className='inputtaiquay' type='number'/>
+                            <button onClick={e => handleDecrease(1, item.id, item.sanPhamChiTiet.soLuong)}>+</button></td>
                             <td>{formatMoney(item.sanPhamChiTiet.giaTien)}</td>
                             <td>{formatMoney(item.sanPhamChiTiet.giaTien * item.soLuong)}</td>
                             <td><button onClick={()=>deleteChiTiet(item.id)} class="delete-btn"><i className='fa fa-remove'></i></button></td>
@@ -309,6 +448,29 @@ const AdminDatTaiQuay = ()=>{
                         </div>
                         <div className='col-sm-5'>
                             <button onClick={()=>CapNhatKhachHang()} className='btn btn-primary'>Chọn khách hàng</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className='dssanphamhoadon'>
+                    <div className='d-flex'>
+                        <strong>Thông tin giảm giá</strong>
+                        <strong className='mahdcho'>{selectHoaDonCho?.maHoaDon}</strong><strong className='mahdcho'>{selectHoaDonCho?.ngayTao}</strong>
+                    </div>
+                    <div className='row top30'>
+                        <div className='col-sm-7'>
+                            <Select
+                                className="select-container selectheader" 
+                                options={dotGiamGia}
+                                value={selectDotGiamGia}
+                                onChange={e => change_dotGiamGia(e)}
+                                getOptionLabel={(option) => option.id +" - "+ option.tenPhieu} 
+                                getOptionValue={(option) => option.id}    
+                                placeholder="Chọn phiếu giảm giá"
+                            />
+                        </div>
+                        <div className='col-sm-5'>
+                            <button onClick={()=>capNhapPhieuGiamGia()} className='btn btn-primary'>Chọn phiếu giảm giá</button>
                         </div>
                     </div>
                 </div>
@@ -392,7 +554,9 @@ const AdminDatTaiQuay = ()=>{
                                         <br/>Đế giày: {item.sanPham.deGiay.tenDeGiay}
                                         <br/>Thương hiệu: {item.sanPham.thuongHieu.tenThuongHieu}
                                         <br/>Kích thước: {item.kichCo.tenKichCo}
-                                        <br/>Màu sắc: {item.mauSac.tenMauSac}  <span class="square" style={{background:item.mauSac.maMauSac}}></span>
+                                        <br/>Màu sắc: {item.mauSac.tenMauSac}
+                                        <br/>Số lượng: {item.soLuong}
+                                          <span class="square" style={{background:item.mauSac.maMauSac}}></span>
                                     </td>
                                     <td>{formatMoney(item.giaTien)}</td>
                                     <td><form onSubmit={handleAddChiTietHoaDon}>

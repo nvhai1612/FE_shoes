@@ -26,6 +26,11 @@ const AdminDonHang = ()=>{
         getDonHang();
     }, []);
 
+    useEffect(()=>{
+console.log(items);
+
+    }, [items]);
+
     const getDonHang = async() =>{
         var response = await getMethod('/api/v1/hoa-don/all?&size='+size+'&sort=id,desc&page='+0)
         var result = await response.json();
@@ -206,10 +211,10 @@ const AdminDonHang = ()=>{
                                     return  <tr>
                                     <td onClick={()=>getChiTietDonHang(item)} data-bs-toggle="modal" data-bs-target="#addcate" className='pointer' style={{color:'blue', fontWeight:'bold'}}>{item.id}</td>
                                     <td onClick={()=>getChiTietDonHang(item)} data-bs-toggle="modal" data-bs-target="#addcate" className='pointer' style={{color:'blue', fontWeight:'bold'}}>{item.maHoaDon}</td>
-                                    <td>{item.tenKhachHang}</td>
-                                    <td>{item.email}</td>
-                                    <td>{item.soDienThoai}</td>
-                                    <td>{item.diaChi}</td>
+                                    <td>{item.khachHang === null ? "" : item.khachHang.hoVaTen}</td>
+                                    <td>{item.khachHang === null ? "" :item.khachHang.email}</td>
+                                    <td>{item.khachHang === null ? "" :item.khachHang.soDienThoai}</td>
+                                    <td>{item.khachHang === null ? "" :item.khachHang.diaChi}</td>
                                     <td>{formatMoney(item.tongTien)}</td>
                                     <td>{formatMoney(item.phiVanChuyen)}</td>
                                     <td>{item.loaiHoaDon == true?'Đặt hàng online':'Thanh toán tại quầy'}</td>
